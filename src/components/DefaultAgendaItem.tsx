@@ -9,13 +9,14 @@ interface Props {
 }
 
 export default function DefaultAgendaItem({item, onPress}: Props) {
-  const {title} = item;
+  const {title, startTime} = item;
 
   const _onPress = useCallback(() => onPress?.(item), [item, onPress]);
 
   return (
     <TouchableNativeFeedback onPress={_onPress}>
       <View style={styles.container}>
+        <Text style={styles.time}>{startTime}</Text>
         <Text ellipsizeMode="tail" style={styles.title}>
           {title}
         </Text>
@@ -27,12 +28,19 @@ export default function DefaultAgendaItem({item, onPress}: Props) {
 const styles = StyleSheet.create({
   container: {
     height: ITEM_HEIGHT,
-    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 16,
     backgroundColor: 'white',
+    flexDirection: 'row',
   },
   title: {
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  time: {
+    fontWeight: 'bold',
+    color: '#121212',
+    fontSize: 12,
+    width: 48,
   },
 });
