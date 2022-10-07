@@ -7,7 +7,6 @@ export default function Divider() {
 const styles = StyleSheet.create({
   container: {
     height: 1,
-    width: '100%',
     backgroundColor: 'rgba(0, 0, 0, 0.12)',
   },
 });
