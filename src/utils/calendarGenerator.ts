@@ -135,7 +135,7 @@ type CalendarOptions = {
   skipEmptyDates?: boolean;
 };
 
-export function* calendar({
+export function* calendarGenerator({
   events,
   selectedDate,
   past,
