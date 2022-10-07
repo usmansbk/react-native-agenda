@@ -1,6 +1,7 @@
 import React, {useCallback, useState} from 'react';
 import {SectionList, SectionListProps, StyleSheet} from 'react-native';
 import {AgendaItem, AgendaSection} from 'types';
+import DateHeader from '~components/DateHeader';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
 import ListEmpty from '~components/ListEmpty';
@@ -10,7 +11,6 @@ type ListProps = Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'>;
 
 interface Props extends ListProps {
   selectedDate?: string;
-  loading?: boolean;
   items: AgendaItem[];
   onPressItem?: (item: AgendaItem) => void;
 }
@@ -25,17 +25,23 @@ const keyExtractor = (item: AgendaItem) => item.id;
 
 export default function AgendaList({
   items,
-  loading,
+  refreshing,
   onRefresh,
   refreshControl,
   onPressItem,
-  initialNumToRender = 1,
   renderItem,
+  renderSectionHeader,
+  initialNumToRender = 1,
   getItemLayout = getDefaultItemLayout,
   ItemSeparatorComponent = Divider,
   ListEmptyComponent = ListEmpty,
 }: Props) {
-  const [sections] = useState<AgendaSection[]>([]);
+  const [sections] = useState<AgendaSection[]>([
+    {
+      title: '2022-10-07',
+      data: items,
+    },
+  ]);
 
   const _renderItem = useCallback(
     ({item}: {item: AgendaItem}) => (
@@ -44,9 +50,14 @@ export default function AgendaList({
     [onPressItem],
   );
 
+  const _renderSectionHeader = useCallback(
+    ({section}: {section: AgendaSection}) => <DateHeader section={section} />,
+    [],
+  );
+
   return (
     <SectionList
-      refreshing={loading}
+      refreshing={refreshing}
       onRefresh={onRefresh}
       refreshControl={refreshControl}
       stickySectionHeadersEnabled
@@ -54,6 +65,7 @@ export default function AgendaList({
       initialNumToRender={initialNumToRender}
       sections={sections}
       renderItem={renderItem || _renderItem}
+      renderSectionHeader={renderSectionHeader || _renderSectionHeader}
       keyExtractor={keyExtractor}
       contentContainerStyle={styles.contentContainer}
       getItemLayout={getItemLayout}

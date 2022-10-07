@@ -16,7 +16,9 @@ export default function DefaultAgendaItem({item, onPress}: Props) {
   return (
     <TouchableNativeFeedback onPress={_onPress}>
       <View style={styles.container}>
-        <Text>{title}</Text>
+        <Text ellipsizeMode="tail" style={styles.title}>
+          {title}
+        </Text>
       </View>
     </TouchableNativeFeedback>
   );
@@ -27,9 +29,9 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     justifyContent: 'center',
     paddingHorizontal: 16,
-    margin: 4,
-    borderRadius: 4,
     backgroundColor: 'white',
-    elevation: 1,
+  },
+  title: {
+    fontWeight: 'bold',
   },
 });
