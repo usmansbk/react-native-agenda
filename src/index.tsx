@@ -7,9 +7,8 @@ import Divider from '~components/Divider';
 import ListEmpty from '~components/ListEmpty';
 import {ITEM_HEIGHT} from '~constants';
 
-type ListProps = Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'>;
-
-interface Props extends ListProps {
+interface Props
+  extends Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'> {
   selectedDate?: string;
   items: AgendaItem[];
   onPressItem?: (item: AgendaItem) => void;
