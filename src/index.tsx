@@ -1,29 +1,32 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {AgendaItem} from 'types';
+import DefaultAgendaItem from '~components/DefaultAgendaItem';
 
-interface Props {
+interface Props<T extends AgendaItem> {
   hideEmptyDates?: boolean;
   selectedDate?: string;
-  minDate?: string;
-  maxDate?: string;
-  items: AgendaItem[];
+  items: T[];
   refreshing?: boolean;
   loadItemsForMonth?: (month: number) => void;
-  renderItem?: () => React.ReactNode;
+  renderItem?: (item: T) => React.ReactNode;
   renderEmptyDate?: () => React.ReactNode;
   renderEmptyData?: () => React.ReactNode;
   onRefresh?: () => void;
   onDayChange?: (day: number) => void;
   onDayPress?: (day: number) => void;
+  keyExtractor?: (item: T, index: number) => string;
 }
 
-export default function Agenda({}: Props) {
-  return (
-    <View style={styles.container}>
-      <Text>Agenda</Text>
-    </View>
-  );
+const renderDefaultItem = (item: AgendaItem) => (
+  <DefaultAgendaItem item={item} key={item.id} />
+);
+
+export default function Agenda<T extends AgendaItem>({
+  items,
+  renderItem = renderDefaultItem,
+}: Props<T>) {
+  return <View style={styles.container}>{items.map(renderItem)}</View>;
 }
 
 const styles = StyleSheet.create({
