@@ -13,7 +13,7 @@ export interface AgendaItem {
   recurring?: Recurrence;
 }
 
-export interface AgendaSection<T extends AgendaItem = AgendaItem> {
+export interface AgendaSection {
   title: string;
-  data: T[];
+  data: AgendaItem[];
 }

@@ -1,40 +1,19 @@
-import React, {useState} from 'react';
-import {
-  SectionList,
-  SectionListData,
-  SectionListProps,
-  SectionListRenderItem,
-  StyleSheet,
-} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {SectionList, SectionListProps, StyleSheet} from 'react-native';
 import {AgendaItem, AgendaSection} from 'types';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
 import ListEmpty from '~components/ListEmpty';
 import {ITEM_HEIGHT} from '~constants';
 
-interface Props<T extends AgendaItem = AgendaItem> {
-  selectedDate?: string;
-  items: T[];
-  renderItem?: SectionListRenderItem<T, AgendaSection>;
-  onRefresh?: () => void;
-  getItemLayout?: (
-    _data: SectionListData<AgendaItem, AgendaSection>[] | null,
-    index: number,
-  ) => {
-    length: number;
-    offset: number;
-    index: number;
-  };
-  ItemSeperatorComponent?: SectionListProps<
-    T,
-    AgendaSection
-  >['ItemSeparatorComponent'];
-  ListEmptyComponent?: SectionListProps<T, AgendaSection>['ListEmptyComponent'];
-}
+type ListProps = Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'>;
 
-const renderDefaultItem: Props['renderItem'] = ({item}) => (
-  <DefaultAgendaItem item={item} />
-);
+interface Props extends ListProps {
+  selectedDate?: string;
+  loading?: boolean;
+  items: AgendaItem[];
+  onPressItem?: (item: AgendaItem) => void;
+}
 
 const getDefaultItemLayout: Props['getItemLayout'] = (_data, index) => ({
   length: ITEM_HEIGHT,
@@ -44,24 +23,41 @@ const getDefaultItemLayout: Props['getItemLayout'] = (_data, index) => ({
 
 const keyExtractor = (item: AgendaItem) => item.id;
 
-export default function Agenda<T extends AgendaItem>({
+export default function AgendaList({
   items,
-  renderItem = renderDefaultItem,
-  ItemSeperatorComponent = Divider,
+  loading,
+  onRefresh,
+  refreshControl,
+  onPressItem,
+  initialNumToRender = 1,
+  renderItem,
+  getItemLayout = getDefaultItemLayout,
+  ItemSeparatorComponent = Divider,
   ListEmptyComponent = ListEmpty,
 }: Props) {
-  const [sections] = useState<AgendaSection<T>[]>([]);
+  const [sections] = useState<AgendaSection[]>([]);
+
+  const _renderItem = useCallback(
+    ({item}: {item: AgendaItem}) => (
+      <DefaultAgendaItem item={item} onPress={onPressItem} />
+    ),
+    [onPressItem],
+  );
 
   return (
     <SectionList
+      refreshing={loading}
+      onRefresh={onRefresh}
+      refreshControl={refreshControl}
       stickySectionHeadersEnabled
       showsVerticalScrollIndicator={false}
+      initialNumToRender={initialNumToRender}
       sections={sections}
-      renderItem={renderItem}
+      renderItem={renderItem || _renderItem}
       keyExtractor={keyExtractor}
       contentContainerStyle={styles.contentContainer}
-      getItemLayout={getDefaultItemLayout}
-      ItemSeparatorComponent={ItemSeperatorComponent}
+      getItemLayout={getItemLayout}
+      ItemSeparatorComponent={ItemSeparatorComponent}
       ListEmptyComponent={ListEmptyComponent}
     />
   );
