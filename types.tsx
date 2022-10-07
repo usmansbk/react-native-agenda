@@ -12,3 +12,8 @@ export interface AgendaItem {
   endTime?: string;
   recurring?: Recurrence;
 }
+
+export interface AgendaSection<T extends AgendaItem = AgendaItem> {
+  title: string;
+  data: T[];
+}

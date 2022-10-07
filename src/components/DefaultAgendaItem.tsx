@@ -20,5 +20,9 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     justifyContent: 'center',
     paddingHorizontal: 16,
+    margin: 4,
+    borderRadius: 4,
+    backgroundColor: 'white',
+    elevation: 1,
   },
 });
