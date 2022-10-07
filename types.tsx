@@ -1,4 +1,4 @@
-export interface AgendaEvent {
+export interface AgendaItem {
   id: string;
   title: string;
   startDate: string;

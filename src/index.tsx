@@ -1,13 +1,13 @@
 import React from 'react';
-import {Text, View} from 'react-native';
-import {AgendaEvent} from '../types';
+import {StyleSheet, Text, View} from 'react-native';
+import {AgendaItem} from 'types';
 
 interface Props {
   hideEmptyDates?: boolean;
   selectedDate?: string;
   minDate?: string;
   maxDate?: string;
-  items: AgendaEvent[];
+  items: AgendaItem[];
   refreshing?: boolean;
   loadItemsForMonth?: (month: number) => void;
   renderItem?: () => React.ReactNode;
@@ -20,8 +20,14 @@ interface Props {
 
 export default function Agenda({}: Props) {
   return (
-    <View>
+    <View style={styles.container}>
       <Text>Agenda</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

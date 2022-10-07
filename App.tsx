@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
-import {AgendaEvent} from 'types';
+import {AgendaItem} from 'types';
 import {DATE_FORMAT} from '~constants';
 import Agenda from '~index';
 import dayjs from '~utils/dayjs';
 
 function App() {
-  const [events] = useState<AgendaEvent[]>([
+  const [events] = useState<AgendaItem[]>([
     {
       id: '1',
       title: 'Testing event',
