@@ -3,29 +3,15 @@ import {AgendaItem} from 'types';
 import {DATE_FORMAT} from '~constants';
 import dayjs from '~utils/dayjs';
 
-export interface CalendarSection<T = Event> {
+export interface CalendarSection<T = AgendaItem> {
   title: string;
   data: T[];
 }
 
-export const getRecurringText = ({
-  startDate,
-  recurring,
-}: AgendaItem): string | void => {
-  if (!recurring) {
-    return undefined;
-  }
+export function getItemDate<T extends AgendaItem>(item: T, after?: string) {
+  const {startDate, recurring} = item;
 
-  return new RRule({
-    freq: recurring?.freq,
-    dtstart: dayjs.utc(startDate, DATE_FORMAT).toDate(),
-  }).toText();
-};
-
-export function getEventDate(event: AgendaItem, after?: string) {
-  const {startDate, recurring} = event;
-
-  let eventDate = startDate;
+  let date = startDate;
 
   if (recurring?.freq) {
     const rule = new RRule({
@@ -38,23 +24,22 @@ export function getEventDate(event: AgendaItem, after?: string) {
     const nextDate = rule.after(afterDate, true);
 
     if (nextDate) {
-      eventDate = dayjs.utc(nextDate).format(DATE_FORMAT);
+      date = dayjs.utc(nextDate).format(DATE_FORMAT);
     }
   }
 
-  return eventDate;
+  return date;
 }
 
-function matches<T extends AgendaItem>(event: T, date: dayjs.Dayjs): boolean {
-  const {startDate, recurring} = event;
+function matches<T extends AgendaItem>(item: T, date: dayjs.Dayjs): boolean {
+  const {startDate, recurring} = item;
 
   let eventDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
   if (recurring) {
-    const {freq} = recurring;
     const rule = new RRule({
       dtstart: eventDate,
-      freq: recurring?.freq,
       wkst: RRule.SU,
+      freq: recurring.freq,
     });
 
     const nextDate = rule.after(date.toDate(), true);
@@ -67,15 +52,15 @@ function matches<T extends AgendaItem>(event: T, date: dayjs.Dayjs): boolean {
   return date.isSame(eventDate, 'date');
 }
 
-function getDateEvents<T extends AgendaItem>(
-  events: T[],
+function getItemsByDate<T extends AgendaItem>(
+  items: T[],
   date: dayjs.Dayjs,
 ): T[] {
   const data: T[] = [];
 
-  events.forEach(event => {
-    if (matches(event, date)) {
-      data.push(event);
+  items.forEach(item => {
+    if (matches(item, date)) {
+      data.push(item);
     }
   });
 
@@ -100,7 +85,7 @@ function getDateEvents<T extends AgendaItem>(
   });
 }
 
-function getNextScheduledDateRule(events: AgendaItem[]) {
+function getItemsDateRules(events: AgendaItem[]) {
   const rules = new RRuleSet();
 
   events.forEach(event => {
@@ -129,14 +114,14 @@ function getNextScheduledDateRule(events: AgendaItem[]) {
 }
 
 type CalendarOptions = {
-  events: AgendaItem[];
+  items: AgendaItem[];
   selectedDate: dayjs.Dayjs;
   past?: boolean;
   skipEmptyDates?: boolean;
 };
 
 export function* calendarGenerator({
-  events,
+  items,
   selectedDate,
   past,
   skipEmptyDates = true,
@@ -145,7 +130,7 @@ export function* calendarGenerator({
   let nextDates: RRuleSet | undefined;
 
   if (skipEmptyDates) {
-    nextDates = getNextScheduledDateRule(events);
+    nextDates = getItemsDateRules(items);
     const offsetDate = selectedDate.startOf('day').toDate();
     const nextDate = past
       ? nextDates?.before(offsetDate, true)
@@ -160,7 +145,7 @@ export function* calendarGenerator({
   while (date) {
     yield {
       title: date.format(DATE_FORMAT),
-      data: getDateEvents(events, date),
+      data: getItemsByDate(items, date),
     };
 
     if (skipEmptyDates) {
@@ -179,11 +164,11 @@ export function* calendarGenerator({
   return undefined;
 }
 
-export function groupEventsByDate<T extends AgendaItem>(events: T[]) {
-  const sections: CalendarSection<T>[] = [];
+export function groupItemsByDate<T extends AgendaItem>(items: T[]) {
+  const groups: CalendarSection<T>[] = [];
   const rules = new RRuleSet();
 
-  events.forEach(({startDate}) => {
+  items.forEach(({startDate}) => {
     const date = dayjs.utc(startDate, DATE_FORMAT).startOf('day').toDate();
     rules.rrule(
       new RRule({
@@ -196,11 +181,11 @@ export function groupEventsByDate<T extends AgendaItem>(events: T[]) {
 
   rules.all().forEach(startDate => {
     const date = dayjs.utc(startDate).startOf('day');
-    sections.push({
+    groups.push({
       title: date.format(DATE_FORMAT),
-      data: getDateEvents<T>(events, date),
+      data: getItemsByDate<T>(items, date),
     });
   });
 
-  return sections;
+  return groups;
 }
