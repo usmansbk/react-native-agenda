@@ -23,6 +23,15 @@ export default class AgendaList extends React.Component<Props, State> {
     sections: [],
   };
 
+  static getDerivedStateFromProps(props: Props): Partial<State | null> {
+    if (props.items) {
+      return {
+        sections: [{title: '2022-10-07', data: props.items}],
+      };
+    }
+    return null;
+  }
+
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
 
   private renderItem: Props['renderItem'] = ({item}) => (
