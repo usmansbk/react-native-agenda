@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import Agenda from './src';
-import {AgendaEvent} from './types';
-import dayjs from './src/utils/dayjs';
-import {DATE_FORMAT} from './src/constants';
+import {AgendaEvent} from 'types';
+import {DATE_FORMAT} from '~constants';
+import Agenda from '~index';
+import dayjs from '~utils/dayjs';
 
 function App() {
   const [events] = useState<AgendaEvent[]>([
