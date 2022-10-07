@@ -65,7 +65,7 @@ export default function AgendaList({
 
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
   },
 });
