@@ -5,7 +5,9 @@ import {AgendaItem, AgendaSection} from 'types';
 import DateHeader from '~components/DateHeader';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
+import EmptyDate from '~components/EmptyDate';
 import ListEmpty from '~components/ListEmpty';
+import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
 import {calendarGenerator} from '~utils/calendarGenerator';
 
@@ -21,6 +23,7 @@ export interface AgendaListProps {
   keyExtractor?: ListProps['keyExtractor'];
   renderDateHeader?: ListProps['renderSectionHeader'];
   renderItem?: ListProps['renderItem'];
+  renderEmptyDate?: ListProps['renderSectionFooter'];
   getItemLayout?: ListProps['getItemLayout'];
   initialNumToRender?: ListProps['initialNumToRender'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
@@ -71,6 +74,13 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private renderDateHeader: Props['renderDateHeader'] = ({section}) => (
     <DateHeader section={section} />
   );
+
+  private renderEmptyDate: Props['renderEmptyDate'] = ({section}) => {
+    if (!section.data.length) {
+      return <EmptyDate />;
+    }
+    return null;
+  };
 
   private getItemLayout: Props['getItemLayout'] = (_data, index) => ({
     length: ITEM_HEIGHT,
@@ -128,6 +138,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       refreshControl,
       renderItem,
       renderDateHeader,
+      renderEmptyDate,
       getItemLayout,
       keyExtractor,
       initialNumToRender = 1,
@@ -147,6 +158,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         sections={this.state.sections}
         renderItem={renderItem || this.renderItem}
         renderSectionHeader={renderDateHeader || this.renderDateHeader}
+        renderSectionFooter={renderEmptyDate || this.renderEmptyDate}
         keyExtractor={keyExtractor || this.keyExtractor}
         contentContainerStyle={styles.contentContainer}
         getItemLayout={getItemLayout || this.getItemLayout}
@@ -160,6 +172,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
 });
