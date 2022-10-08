@@ -25,14 +25,14 @@ export default class AgendaList extends React.Component<Props, State> {
     sections: [],
   };
 
-  futureCalendar = calendarGenerator({
+  upcomingEvents = calendarGenerator({
     items: this.props.items,
     selectedDate: this.props.selectedDate
       ? dayjs(this.props.selectedDate)
       : dayjs(),
   });
 
-  pastCalendar = calendarGenerator({
+  pastEvents = calendarGenerator({
     past: true,
     items: this.props.items,
     selectedDate: this.props.selectedDate
@@ -55,6 +55,25 @@ export default class AgendaList extends React.Component<Props, State> {
     offset: index * ITEM_HEIGHT,
     index,
   });
+
+  private loadEvents = () => {
+    let sections: AgendaSection[] = [];
+    for (let i = 0; i < 100; i += 1) {
+      const section = this.upcomingEvents.next();
+      if (!section.done) {
+        sections.push(section.value);
+      }
+    }
+    if (sections.length) {
+      this.setState(prev => ({
+        sections: [...prev.sections, ...sections],
+      }));
+    }
+  };
+
+  componentDidMount = () => {
+    this.loadEvents();
+  };
 
   render(): React.ReactNode {
     const {

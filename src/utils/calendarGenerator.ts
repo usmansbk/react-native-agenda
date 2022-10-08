@@ -1,12 +1,7 @@
 import {Frequency, RRule, RRuleSet} from 'rrule';
-import {AgendaItem} from 'types';
+import {AgendaItem, AgendaSection} from 'types';
 import {DATE_FORMAT} from '~constants';
 import dayjs from '~utils/dayjs';
-
-export interface CalendarSection {
-  title: string;
-  data: AgendaItem[];
-}
 
 function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   const {startDate, recurring} = item;
@@ -97,7 +92,7 @@ export function* calendarGenerator({
   items,
   selectedDate,
   past,
-}: CalendarOptions): Generator<CalendarSection, unknown, any> {
+}: CalendarOptions): Generator<AgendaSection, unknown, any> {
   let date: dayjs.Dayjs | undefined;
   let nextDates = getItemsDateRules(items);
 

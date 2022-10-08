@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     paddingHorizontal: 16,
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    backgroundColor: '#e6e6e6',
   },
   title: {
     fontWeight: 'bold',
