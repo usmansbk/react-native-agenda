@@ -35,7 +35,7 @@ interface State {
   hasMorePast: boolean;
 }
 
-export default class AgendaList extends React.Component<Props, State> {
+export default class AgendaList extends React.PureComponent<Props, State> {
   state: Readonly<State> = {
     sections: [],
     hasMorePast: true,

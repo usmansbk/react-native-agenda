@@ -16,7 +16,7 @@ export default function DateHeader({section}: Props) {
     nextWeek: 'dddd, D MMMM',
     lastDay: '[Yesterday,] dddd, D MMMM',
     lastWeek: 'dddd, D MMMM',
-    sameElse: 'dddd, D MMMM',
+    sameElse: 'dddd, D MMMM, YYYY',
   });
 
   return (
