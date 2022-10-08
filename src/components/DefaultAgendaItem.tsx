@@ -1,6 +1,7 @@
 import {useCallback} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AgendaItem} from 'types';
+import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
 
 interface Props {
@@ -30,16 +31,16 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     alignItems: 'center',
     paddingHorizontal: 16,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
     flexDirection: 'row',
   },
   title: {
     fontSize: 14,
-    color: '#888',
+    color: colors.text,
   },
   time: {
     fontWeight: 'bold',
-    color: '#666',
+    color: colors.textDarker,
     fontSize: 12,
     width: 48,
   },

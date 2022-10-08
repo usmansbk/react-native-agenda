@@ -1,4 +1,5 @@
 import {StyleSheet, View} from 'react-native';
+import colors from '~config/colors';
 
 export default function Divider() {
   return <View style={styles.container} />;
@@ -7,6 +8,6 @@ export default function Divider() {
 const styles = StyleSheet.create({
   container: {
     height: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+    backgroundColor: colors.divider,
   },
 });

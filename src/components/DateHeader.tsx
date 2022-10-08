@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import {AgendaSection} from 'types';
+import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
 import dayjs from '~utils/dayjs';
 
@@ -31,11 +32,11 @@ const styles = StyleSheet.create({
     height: ITEM_HEIGHT,
     paddingHorizontal: 16,
     justifyContent: 'center',
-    backgroundColor: '#e6e6e6',
+    backgroundColor: colors.surface,
   },
   title: {
     fontWeight: 'bold',
     fontSize: 12,
-    color: '#888',
+    color: colors.text,
   },
 });
