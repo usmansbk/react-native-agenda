@@ -3,12 +3,12 @@ import {AgendaItem} from 'types';
 import {DATE_FORMAT} from '~constants';
 import dayjs from '~utils/dayjs';
 
-export interface CalendarSection<T = AgendaItem> {
+export interface CalendarSection {
   title: string;
-  data: T[];
+  data: AgendaItem[];
 }
 
-function matches<T extends AgendaItem>(item: T, date: dayjs.Dayjs): boolean {
+function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   const {startDate, recurring} = item;
 
   let eventDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
@@ -29,11 +29,8 @@ function matches<T extends AgendaItem>(item: T, date: dayjs.Dayjs): boolean {
   return date.isSame(eventDate, 'date');
 }
 
-function getItemsByDate<T extends AgendaItem>(
-  items: T[],
-  date: dayjs.Dayjs,
-): T[] {
-  const data: T[] = [];
+function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
+  const data: AgendaItem[] = [];
 
   items.forEach(item => {
     if (matches(item, date)) {
@@ -105,6 +102,7 @@ export function* calendarGenerator({
   let nextDates = getItemsDateRules(items);
 
   const offsetDate = selectedDate.startOf('day').toDate();
+
   const nextDate = past
     ? nextDates?.before(offsetDate, true)
     : nextDates?.after(offsetDate, true);
