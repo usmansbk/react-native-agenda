@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import React from 'react';
 import {SectionList, SectionListProps, StyleSheet} from 'react-native';
 import {AgendaItem, AgendaSection} from 'types';
@@ -6,6 +7,7 @@ import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
 import ListEmpty from '~components/ListEmpty';
 import {ITEM_HEIGHT} from '~constants';
+import {calendarGenerator} from '~utils/calendarGenerator';
 
 interface Props
   extends Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'> {
@@ -23,14 +25,20 @@ export default class AgendaList extends React.Component<Props, State> {
     sections: [],
   };
 
-  static getDerivedStateFromProps(props: Props): Partial<State | null> {
-    if (props.items) {
-      return {
-        sections: [{title: '2022-10-07', data: props.items}],
-      };
-    }
-    return null;
-  }
+  futureCalendar = calendarGenerator({
+    items: this.props.items,
+    selectedDate: this.props.selectedDate
+      ? dayjs(this.props.selectedDate)
+      : dayjs(),
+  });
+
+  pastCalendar = calendarGenerator({
+    past: true,
+    items: this.props.items,
+    selectedDate: this.props.selectedDate
+      ? dayjs(this.props.selectedDate)
+      : dayjs(),
+  });
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
 
