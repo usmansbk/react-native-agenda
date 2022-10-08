@@ -17,6 +17,8 @@ export interface AgendaListProps {
   loading?: boolean;
   selectedDate?: string;
   items: AgendaItem[];
+  futureScrollRange?: number;
+  pastScrollRange?: number;
   onPressItem?: (item: AgendaItem) => void;
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
@@ -43,6 +45,14 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     sections: [],
     hasMorePast: true,
     hasMoreUpcoming: true,
+  };
+
+  static defaultProps: Readonly<Partial<Props>> = {
+    initialNumToRender: 1,
+    pastScrollRange: 50,
+    futureScrollRange: 100,
+    ItemSeparatorComponent: Divider,
+    ListEmptyComponent: ListEmpty,
   };
 
   private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
@@ -141,9 +151,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       renderEmptyDate,
       getItemLayout,
       keyExtractor,
-      initialNumToRender = 1,
-      ItemSeparatorComponent = Divider,
-      ListEmptyComponent = ListEmpty,
+      initialNumToRender,
+      ItemSeparatorComponent,
+      ListEmptyComponent,
     } = this.props;
 
     return (
