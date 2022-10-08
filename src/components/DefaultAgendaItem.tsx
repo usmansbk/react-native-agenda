@@ -1,5 +1,5 @@
 import {useCallback} from 'react';
-import {StyleSheet, Text, TouchableNativeFeedback, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AgendaItem} from 'types';
 import {ITEM_HEIGHT} from '~constants';
 
@@ -14,14 +14,14 @@ export default function DefaultAgendaItem({item, onPress}: Props) {
   const _onPress = useCallback(() => onPress?.(item), [item, onPress]);
 
   return (
-    <TouchableNativeFeedback onPress={_onPress}>
+    <TouchableOpacity onPress={_onPress}>
       <View style={styles.container}>
         <Text style={styles.time}>{startTime}</Text>
         <Text ellipsizeMode="tail" style={styles.title}>
           {title}
         </Text>
       </View>
-    </TouchableNativeFeedback>
+    </TouchableOpacity>
   );
 }
 
