@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import React from 'react';
+import React, {createRef, RefObject} from 'react';
 import {SectionList, SectionListProps, StyleSheet} from 'react-native';
 import {AgendaItem, AgendaSection} from 'types';
 import DateHeader from '~components/DateHeader';
@@ -41,6 +41,8 @@ export default class AgendaList extends React.Component<Props, State> {
     hasMoreUpcoming: true,
   };
 
+  private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
+
   private getSelectedDate = () => {
     const date = this.props.selectedDate;
     return date ? dayjs(date) : dayjs();
@@ -59,7 +61,7 @@ export default class AgendaList extends React.Component<Props, State> {
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
 
-  private onPressItem = this.props.onPressItem;
+  private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
   private renderItem: Props['renderItem'] = ({item}) => (
     <DefaultAgendaItem item={item} onPress={this.onPressItem} />
@@ -133,6 +135,7 @@ export default class AgendaList extends React.Component<Props, State> {
 
     return (
       <SectionList
+        ref={this.ref}
         stickySectionHeadersEnabled
         showsVerticalScrollIndicator={false}
         refreshing={loading}
