@@ -19,6 +19,8 @@ export interface AgendaListProps {
   items: AgendaItem[];
   dateHeaderHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
+  onLayout?: ListProps['onLayout'];
+  showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
   onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
   refreshControl?: ListProps['refreshControl'];
@@ -51,12 +53,13 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static defaultProps: Readonly<Partial<Props>> = {
     dateHeaderHeight: ITEM_HEIGHT,
     initialNumToRender: 1,
+    showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
   };
 
-  private mountTimer: number | undefined;
-  private loadMoreTimer: number | undefined;
+  private initialLoadTimer: number | undefined;
+  private loadMoreUpcomingTimer: number | undefined;
 
   private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
 
@@ -137,7 +140,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private loadMoreFutureItems = () => {
     if (this.state.hasMoreUpcoming) {
-      this.loadMoreTimer = setTimeout(() => {
+      this.loadMoreUpcomingTimer = setTimeout(() => {
         this.loadUpcomingItems();
       }, 0);
     }
@@ -146,23 +149,23 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   public scrollToTop = () =>
     this.scrollToDate(this.getSelectedDate().format(DATE_FORMAT));
 
-  public scrollToDate = (date: string) => {
+  public scrollToDate = (date: string, itemIndex = 1, viewPosition = 0) => {
     const sectionIndex = this.state.sections.findIndex(
       section => section.title === date,
     );
 
     if (sectionIndex !== -1) {
       this.ref.current?.scrollToLocation({
-        itemIndex: 1,
+        itemIndex,
         sectionIndex,
-        viewPosition: 0,
+        viewPosition,
         viewOffset: this.props.dateHeaderHeight,
       });
     }
   };
 
   componentDidMount = () => {
-    this.mountTimer = setTimeout(() => {
+    this.initialLoadTimer = setTimeout(() => {
       this.loadPastItems();
       this.loadUpcomingItems();
       if (this.state.sections.length) {
@@ -172,12 +175,12 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   componentWillUnmount = () => {
-    if (this.mountTimer !== undefined) {
-      clearTimeout(this.mountTimer);
+    if (this.initialLoadTimer !== undefined) {
+      clearTimeout(this.initialLoadTimer);
     }
 
-    if (this.loadMoreTimer !== undefined) {
-      clearTimeout(this.loadMoreTimer);
+    if (this.loadMoreUpcomingTimer !== undefined) {
+      clearTimeout(this.loadMoreUpcomingTimer);
     }
   };
 
@@ -185,6 +188,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     const {
       loading,
       onRefresh,
+      onLayout,
       refreshControl,
       renderItem,
       renderDateHeader,
@@ -193,6 +197,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       keyExtractor,
       initialNumToRender,
       keyboardShouldPersistTaps,
+      showsVerticalScrollIndicator,
       onEndReachedThreshold,
       ItemSeparatorComponent,
       ListEmptyComponent,
@@ -202,10 +207,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       <SectionList
         ref={this.ref}
         stickySectionHeadersEnabled
-        showsVerticalScrollIndicator={false}
         refreshing={loading}
         onRefresh={onRefresh}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         refreshControl={refreshControl}
         initialNumToRender={initialNumToRender}
         sections={this.state.sections}
@@ -219,6 +224,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         ListEmptyComponent={ListEmptyComponent}
         onEndReached={this.loadMoreFutureItems}
         onEndReachedThreshold={onEndReachedThreshold}
+        onLayout={onLayout}
       />
     );
   }

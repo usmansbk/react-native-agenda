@@ -6,7 +6,7 @@ import {generateItems} from '~mockData';
 function App() {
   const [events] = useState<AgendaItem[]>(generateItems());
 
-  return <Agenda items={events} onPressItem={console.log} />;
+  return <Agenda items={events} />;
 }
 
 export default App;
