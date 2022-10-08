@@ -18,6 +18,8 @@ export interface AgendaListProps {
   selectedDate?: string;
   items: AgendaItem[];
   onPressItem?: (item: AgendaItem) => void;
+  keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
+  onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
@@ -132,7 +134,32 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }, 0);
   };
 
-  private loadMoreFutureItems = () => this.loadUpcomingItems();
+  private loadMoreFutureItems = () => {
+    if (this.state.hasMoreUpcoming) {
+      this.loadUpcomingItems();
+    }
+  };
+
+  public scrollToTop = () =>
+    this.ref.current?.scrollToLocation({
+      itemIndex: 0,
+      sectionIndex: 0,
+      viewPosition: 1,
+    });
+
+  public scrollToDate = (date: string) => {
+    const sectionIndex = this.state.sections.findIndex(
+      section => section.title === date,
+    );
+
+    if (sectionIndex !== -1) {
+      this.ref.current?.scrollToLocation({
+        itemIndex: 0,
+        sectionIndex,
+        viewPosition: 1,
+      });
+    }
+  };
 
   componentDidMount = () => {
     this.loadPastItems();
@@ -150,6 +177,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       getItemLayout,
       keyExtractor,
       initialNumToRender,
+      keyboardShouldPersistTaps,
+      onEndReachedThreshold,
       ItemSeparatorComponent,
       ListEmptyComponent,
     } = this.props;
@@ -161,6 +190,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         showsVerticalScrollIndicator={false}
         refreshing={loading}
         onRefresh={onRefresh}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         refreshControl={refreshControl}
         initialNumToRender={initialNumToRender}
         sections={this.state.sections}
@@ -173,6 +203,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListEmptyComponent={ListEmptyComponent}
         onEndReached={this.loadMoreFutureItems}
+        onEndReachedThreshold={onEndReachedThreshold}
       />
     );
   }
