@@ -12,10 +12,10 @@ interface Props {
 export default function DefaultAgendaItem({item, onPress}: Props) {
   const {title, startTime} = item;
 
-  const _onPress = useCallback(() => onPress?.(item), [item, onPress]);
+  const handlePress = useCallback(() => onPress?.(item), [item, onPress]);
 
   return (
-    <TouchableOpacity onPress={_onPress}>
+    <TouchableOpacity onPress={onPress && handlePress}>
       <View style={styles.container}>
         <Text style={styles.time}>{startTime}</Text>
         <Text ellipsizeMode="tail" style={styles.title}>

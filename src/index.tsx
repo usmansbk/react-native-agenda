@@ -8,7 +8,7 @@ import Divider from '~components/Divider';
 import EmptyDate from '~components/EmptyDate';
 import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
-import {ITEM_HEIGHT} from '~constants';
+import {DATE_FORMAT, ITEM_HEIGHT} from '~constants';
 import {calendarGenerator} from '~utils/calendarGenerator';
 
 type ListProps = SectionListProps<AgendaItem, AgendaSection>;
@@ -53,6 +53,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     ListEmptyComponent: ListEmpty,
   };
 
+  private mountTimer: number | undefined;
+  private loadMoreTimer: number | undefined;
+
   private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
 
   private getSelectedDate = () => {
@@ -96,47 +99,45 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     index,
   });
 
-  private loadUpcomingItems = (maxNumOfDays = 100) => {
-    setTimeout(() => {
-      const sections: AgendaSection[] = [];
-      for (let i = 0; i < maxNumOfDays; i += 1) {
-        const section = this.upcomingItems.next();
-        if (!section.done) {
-          sections.push(section.value);
-        } else {
-          this.setState({hasMoreUpcoming: false});
-          break;
-        }
+  private loadUpcomingItems = (maxNumOfDays = 50) => {
+    const sections: AgendaSection[] = [];
+    for (let i = 0; i < maxNumOfDays; i += 1) {
+      const section = this.upcomingItems.next();
+      if (!section.done) {
+        sections.push(section.value);
+      } else {
+        this.setState({hasMoreUpcoming: false});
+        break;
       }
+    }
 
-      if (sections.length) {
-        this.setState({sections: [...this.state.sections, ...sections]});
-      }
-    }, 0);
+    if (sections.length) {
+      this.setState({sections: [...this.state.sections, ...sections]});
+    }
   };
 
   private loadPastItems = (maxNumOfDays = 7) => {
-    setTimeout(() => {
-      const sections: AgendaSection[] = [];
-      for (let i = 0; i < maxNumOfDays; i += 1) {
-        const section = this.pastItems.next();
-        if (!section.done) {
-          sections.push(section.value);
-        } else {
-          this.setState({hasMorePast: false});
-          break;
-        }
+    const sections: AgendaSection[] = [];
+    for (let i = 0; i < maxNumOfDays; i += 1) {
+      const section = this.pastItems.next();
+      if (!section.done) {
+        sections.push(section.value);
+      } else {
+        this.setState({hasMorePast: false});
+        break;
       }
+    }
 
-      if (sections.length) {
-        this.setState({sections: [...sections, ...this.state.sections]});
-      }
-    }, 0);
+    if (sections.length) {
+      this.setState({sections: [...sections, ...this.state.sections]});
+    }
   };
 
   private loadMoreFutureItems = () => {
     if (this.state.hasMoreUpcoming) {
-      this.loadUpcomingItems();
+      this.loadMoreTimer = setTimeout(() => {
+        this.loadUpcomingItems();
+      }, 0);
     }
   };
 
@@ -162,8 +163,23 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   componentDidMount = () => {
-    this.loadPastItems();
-    this.loadUpcomingItems();
+    this.mountTimer = setTimeout(() => {
+      this.loadPastItems();
+      this.loadUpcomingItems();
+      if (this.state.sections.length) {
+        this.scrollToDate(this.getSelectedDate().format(DATE_FORMAT));
+      }
+    }, 0);
+  };
+
+  componentWillUnmount = () => {
+    if (this.mountTimer) {
+      clearTimeout(this.mountTimer);
+    }
+
+    if (this.loadMoreTimer) {
+      clearTimeout(this.loadMoreTimer);
+    }
   };
 
   render(): React.ReactNode {
