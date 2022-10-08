@@ -15,6 +15,7 @@ type ListProps = SectionListProps<AgendaItem, AgendaSection>;
 
 export interface AgendaListProps {
   loading?: boolean;
+  animateScroll?: boolean;
   selectedDate?: string;
   items: AgendaItem[];
   dateHeaderHeight?: number;
@@ -44,18 +45,21 @@ interface State {
 }
 
 export default class AgendaList extends React.PureComponent<Props, State> {
-  state: Readonly<State> = {
-    sections: [],
-    hasMorePast: true,
-    hasMoreUpcoming: true,
-  };
+  static displayName = 'AgendaList';
 
   static defaultProps: Readonly<Partial<Props>> = {
     dateHeaderHeight: ITEM_HEIGHT,
+    animateScroll: false,
     initialNumToRender: 1,
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
+  };
+
+  state: Readonly<State> = {
+    sections: [],
+    hasMorePast: true,
+    hasMoreUpcoming: true,
   };
 
   private initialLoadTimer: number | undefined;
@@ -160,6 +164,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         sectionIndex,
         viewPosition,
         viewOffset: this.props.dateHeaderHeight,
+        animated: this.props.animateScroll,
       });
     }
   };
