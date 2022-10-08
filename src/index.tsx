@@ -17,6 +17,7 @@ export interface AgendaListProps {
   loading?: boolean;
   selectedDate?: string;
   items: AgendaItem[];
+  dateHeaderHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
   onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
@@ -48,6 +49,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   static defaultProps: Readonly<Partial<Props>> = {
+    dateHeaderHeight: ITEM_HEIGHT,
     initialNumToRender: 1,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
@@ -154,7 +156,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         itemIndex: 1,
         sectionIndex,
         viewPosition: 0,
-        viewOffset: ITEM_HEIGHT,
+        viewOffset: this.props.dateHeaderHeight,
       });
     }
   };
