@@ -61,8 +61,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
 
   private getSelectedDate = () => {
-    const date = this.props.selectedDate;
-    return date ? dayjs(date) : dayjs();
+    const {selectedDate} = this.props;
+    return selectedDate ? dayjs(selectedDate) : dayjs();
   };
 
   private upcomingItems = calendarGenerator({
