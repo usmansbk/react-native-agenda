@@ -54,7 +54,7 @@ function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
   });
 }
 
-function getItemsDateRules(events: AgendaItem[]) {
+function createDateRules(events: AgendaItem[]) {
   const rules = new RRuleSet();
 
   events.forEach(event => {
@@ -93,15 +93,13 @@ export function* calendarGenerator({
   selectedDate,
   past,
 }: CalendarOptions): Generator<AgendaSection, unknown, any> {
-  let date: dayjs.Dayjs | undefined;
-  let nextDates = getItemsDateRules(items);
-
+  const rules = createDateRules(items);
   const offsetDate = selectedDate.startOf('day').toDate();
-
   const nextDate = past
-    ? nextDates?.before(offsetDate, true)
-    : nextDates?.after(offsetDate, true);
+    ? rules?.before(offsetDate, true)
+    : rules?.after(offsetDate, true);
 
+  let date: dayjs.Dayjs | undefined;
   if (nextDate) {
     date = dayjs.utc(nextDate).startOf('day');
   }
@@ -113,8 +111,8 @@ export function* calendarGenerator({
     };
 
     const nextDate = past
-      ? nextDates?.before(date.toDate())
-      : nextDates?.after(date.toDate());
+      ? rules?.before(date.toDate())
+      : rules?.after(date.toDate());
 
     if (!nextDate) {
       break;
