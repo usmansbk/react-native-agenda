@@ -142,11 +142,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   public scrollToTop = () =>
-    this.ref.current?.scrollToLocation({
-      itemIndex: 0,
-      sectionIndex: 0,
-      viewPosition: 1,
-    });
+    this.scrollToDate(this.getSelectedDate().format(DATE_FORMAT));
 
   public scrollToDate = (date: string) => {
     const sectionIndex = this.state.sections.findIndex(
@@ -155,9 +151,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
     if (sectionIndex !== -1) {
       this.ref.current?.scrollToLocation({
-        itemIndex: 0,
+        itemIndex: 1,
         sectionIndex,
-        viewPosition: 1,
+        viewPosition: 0,
+        viewOffset: ITEM_HEIGHT,
       });
     }
   };
@@ -167,17 +164,17 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       this.loadPastItems();
       this.loadUpcomingItems();
       if (this.state.sections.length) {
-        this.scrollToDate(this.getSelectedDate().format(DATE_FORMAT));
+        this.scrollToTop();
       }
     }, 0);
   };
 
   componentWillUnmount = () => {
-    if (this.mountTimer) {
+    if (this.mountTimer !== undefined) {
       clearTimeout(this.mountTimer);
     }
 
-    if (this.loadMoreTimer) {
+    if (this.loadMoreTimer !== undefined) {
       clearTimeout(this.loadMoreTimer);
     }
   };
