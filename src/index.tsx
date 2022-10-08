@@ -9,35 +9,52 @@ import ListEmpty from '~components/ListEmpty';
 import {ITEM_HEIGHT} from '~constants';
 import {calendarGenerator} from '~utils/calendarGenerator';
 
-interface Props
-  extends Omit<SectionListProps<AgendaItem, AgendaSection>, 'sections'> {
+type ListProps = SectionListProps<AgendaItem, AgendaSection>;
+
+export interface AgendaListProps {
+  loading?: boolean;
   selectedDate?: string;
   items: AgendaItem[];
   onPressItem?: (item: AgendaItem) => void;
+  onRefresh?: ListProps['onRefresh'];
+  keyExtractor?: ListProps['keyExtractor'];
+  renderDateHeader?: ListProps['renderSectionHeader'];
+  renderItem?: ListProps['renderItem'];
+  getItemLayout?: ListProps['getItemLayout'];
+  initialNumToRender?: ListProps['initialNumToRender'];
+  ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
+  ListEmptyComponent?: ListProps['ListEmptyComponent'];
 }
+
+type Props = AgendaListProps;
 
 interface State {
   sections: AgendaSection[];
+  hasMoreUpcoming: boolean;
+  hasMorePast: boolean;
 }
 
 export default class AgendaList extends React.Component<Props, State> {
   state: Readonly<State> = {
     sections: [],
+    hasMorePast: true,
+    hasMoreUpcoming: true,
   };
 
-  upcomingEvents = calendarGenerator({
+  private getSelectedDate = () => {
+    const date = this.props.selectedDate;
+    return date ? dayjs(date) : dayjs();
+  };
+
+  private upcomingItems = calendarGenerator({
     items: this.props.items,
-    selectedDate: this.props.selectedDate
-      ? dayjs(this.props.selectedDate)
-      : dayjs(),
+    selectedDate: this.getSelectedDate(),
   });
 
-  pastEvents = calendarGenerator({
+  private pastItems = calendarGenerator({
     past: true,
     items: this.props.items,
-    selectedDate: this.props.selectedDate
-      ? dayjs(this.props.selectedDate)
-      : dayjs(),
+    selectedDate: this.getSelectedDate(),
   });
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
@@ -46,7 +63,7 @@ export default class AgendaList extends React.Component<Props, State> {
     <DefaultAgendaItem item={item} onPress={this.props.onPressItem} />
   );
 
-  private renderSectionHeader: Props['renderSectionHeader'] = ({section}) => (
+  private renderDateHeader: Props['renderDateHeader'] = ({section}) => (
     <DateHeader section={section} />
   );
 
@@ -56,14 +73,18 @@ export default class AgendaList extends React.Component<Props, State> {
     index,
   });
 
-  private loadEvents = () => {
-    let sections: AgendaSection[] = [];
-    for (let i = 0; i < 100; i += 1) {
-      const section = this.upcomingEvents.next();
+  private loadUpcomingItems = (maxNumOfDays = 100) => {
+    const sections: AgendaSection[] = [];
+    for (let i = 0; i < maxNumOfDays; i += 1) {
+      const section = this.upcomingItems.next();
       if (!section.done) {
         sections.push(section.value);
+      } else {
+        this.setState({hasMoreUpcoming: false});
+        break;
       }
     }
+
     if (sections.length) {
       this.setState(prev => ({
         sections: [...prev.sections, ...sections],
@@ -71,31 +92,53 @@ export default class AgendaList extends React.Component<Props, State> {
     }
   };
 
+  private loadPastItems = (maxNumOfDays = 100) => {
+    const sections: AgendaSection[] = [];
+    for (let i = 0; i < maxNumOfDays; i += 1) {
+      const section = this.pastItems.next();
+      if (!section.done) {
+        sections.push(section.value);
+      } else {
+        this.setState({hasMorePast: false});
+        break;
+      }
+    }
+
+    if (sections.length) {
+      this.setState(prev => ({
+        sections: [...sections, ...prev.sections],
+      }));
+    }
+  };
+
   componentDidMount = () => {
-    this.loadEvents();
+    this.loadPastItems();
+    this.loadUpcomingItems();
   };
 
   render(): React.ReactNode {
     const {
+      loading,
+      onRefresh,
       renderItem,
-      renderSectionHeader,
+      renderDateHeader,
       getItemLayout,
       keyExtractor,
       initialNumToRender = 1,
       ItemSeparatorComponent = Divider,
       ListEmptyComponent = ListEmpty,
-      ...rest
     } = this.props;
 
     return (
       <SectionList
-        {...rest}
         stickySectionHeadersEnabled
         showsVerticalScrollIndicator={false}
+        refreshing={loading}
+        onRefresh={onRefresh}
         initialNumToRender={initialNumToRender}
         sections={this.state.sections}
         renderItem={renderItem || this.renderItem}
-        renderSectionHeader={renderSectionHeader || this.renderSectionHeader}
+        renderSectionHeader={renderDateHeader || this.renderDateHeader}
         keyExtractor={keyExtractor || this.keyExtractor}
         contentContainerStyle={styles.contentContainer}
         getItemLayout={getItemLayout || this.getItemLayout}
