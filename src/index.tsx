@@ -17,8 +17,6 @@ export interface AgendaListProps {
   loading?: boolean;
   selectedDate?: string;
   items: AgendaItem[];
-  futureScrollRange?: number;
-  pastScrollRange?: number;
   onPressItem?: (item: AgendaItem) => void;
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
@@ -49,8 +47,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   static defaultProps: Readonly<Partial<Props>> = {
     initialNumToRender: 1,
-    pastScrollRange: 50,
-    futureScrollRange: 100,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
   };
@@ -117,7 +113,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }, 0);
   };
 
-  private loadPastItems = (maxNumOfDays = 100) => {
+  private loadPastItems = (maxNumOfDays = 7) => {
     setTimeout(() => {
       const sections: AgendaSection[] = [];
       for (let i = 0; i < maxNumOfDays; i += 1) {
@@ -135,6 +131,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       }
     }, 0);
   };
+
+  private loadMoreFutureItems = () => this.loadUpcomingItems();
 
   componentDidMount = () => {
     this.loadPastItems();
@@ -174,6 +172,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         getItemLayout={getItemLayout || this.getItemLayout}
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListEmptyComponent={ListEmptyComponent}
+        onEndReached={this.loadMoreFutureItems}
       />
     );
   }
