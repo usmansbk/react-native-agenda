@@ -59,8 +59,10 @@ export default class AgendaList extends React.Component<Props, State> {
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
 
+  private onPressItem = this.props.onPressItem;
+
   private renderItem: Props['renderItem'] = ({item}) => (
-    <DefaultAgendaItem item={item} onPress={this.props.onPressItem} />
+    <DefaultAgendaItem item={item} onPress={this.onPressItem} />
   );
 
   private renderDateHeader: Props['renderDateHeader'] = ({section}) => (
@@ -74,41 +76,41 @@ export default class AgendaList extends React.Component<Props, State> {
   });
 
   private loadUpcomingItems = (maxNumOfDays = 100) => {
-    const sections: AgendaSection[] = [];
-    for (let i = 0; i < maxNumOfDays; i += 1) {
-      const section = this.upcomingItems.next();
-      if (!section.done) {
-        sections.push(section.value);
-      } else {
-        this.setState({hasMoreUpcoming: false});
-        break;
+    setTimeout(() => {
+      const sections: AgendaSection[] = [];
+      for (let i = 0; i < maxNumOfDays; i += 1) {
+        const section = this.upcomingItems.next();
+        if (!section.done) {
+          sections.push(section.value);
+        } else {
+          this.setState({hasMoreUpcoming: false});
+          break;
+        }
       }
-    }
 
-    if (sections.length) {
-      this.setState(prev => ({
-        sections: [...prev.sections, ...sections],
-      }));
-    }
+      if (sections.length) {
+        this.setState({sections: [...this.state.sections, ...sections]});
+      }
+    }, 0);
   };
 
   private loadPastItems = (maxNumOfDays = 100) => {
-    const sections: AgendaSection[] = [];
-    for (let i = 0; i < maxNumOfDays; i += 1) {
-      const section = this.pastItems.next();
-      if (!section.done) {
-        sections.push(section.value);
-      } else {
-        this.setState({hasMorePast: false});
-        break;
+    setTimeout(() => {
+      const sections: AgendaSection[] = [];
+      for (let i = 0; i < maxNumOfDays; i += 1) {
+        const section = this.pastItems.next();
+        if (!section.done) {
+          sections.push(section.value);
+        } else {
+          this.setState({hasMorePast: false});
+          break;
+        }
       }
-    }
 
-    if (sections.length) {
-      this.setState(prev => ({
-        sections: [...sections, ...prev.sections],
-      }));
-    }
+      if (sections.length) {
+        this.setState({sections: [...sections, ...this.state.sections]});
+      }
+    }, 0);
   };
 
   componentDidMount = () => {
