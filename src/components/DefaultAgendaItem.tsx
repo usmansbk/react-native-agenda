@@ -34,12 +34,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   title: {
-    fontWeight: 'bold',
     fontSize: 14,
+    color: '#888',
   },
   time: {
     fontWeight: 'bold',
-    color: '#121212',
+    color: '#888',
     fontSize: 12,
     width: 48,
   },
