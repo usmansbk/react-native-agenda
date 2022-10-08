@@ -16,6 +16,7 @@ export interface AgendaListProps {
   selectedDate?: string;
   items: AgendaItem[];
   onPressItem?: (item: AgendaItem) => void;
+  refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
   renderDateHeader?: ListProps['renderSectionHeader'];
@@ -124,6 +125,7 @@ export default class AgendaList extends React.Component<Props, State> {
     const {
       loading,
       onRefresh,
+      refreshControl,
       renderItem,
       renderDateHeader,
       getItemLayout,
@@ -140,6 +142,7 @@ export default class AgendaList extends React.Component<Props, State> {
         showsVerticalScrollIndicator={false}
         refreshing={loading}
         onRefresh={onRefresh}
+        refreshControl={refreshControl}
         initialNumToRender={initialNumToRender}
         sections={this.state.sections}
         renderItem={renderItem || this.renderItem}
