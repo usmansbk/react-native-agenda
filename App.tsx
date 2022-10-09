@@ -8,16 +8,22 @@ function App() {
     {
       id: '1',
       title: 'Scholarships',
-      startDate: '2022-10-09',
+      startDate: '2022-10-10',
       startTime: '19:06',
       recurring: {
         freq: 1,
       },
     },
+    {
+      id: '1',
+      title: 'Overdue',
+      startDate: '2022-10-10',
+      startTime: '23:06',
+    },
   ]);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{flex: 1}}>
       <Agenda items={events} />
     </SafeAreaView>
   );
