@@ -17,3 +17,12 @@ export interface AgendaSection {
   title: string;
   data: AgendaItem[];
 }
+
+export interface DayFormats {
+  sameDay: string;
+  nextDay: string;
+  nextWeek: string;
+  lastDay: string;
+  lastWeek: string;
+  sameElse: string;
+}
