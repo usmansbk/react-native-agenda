@@ -148,9 +148,11 @@ export function* calendarGenerator({
   }
 
   while (date) {
+    const title = date.format(DATE_FORMAT);
     yield {
-      title: date.format(DATE_FORMAT),
+      title,
       data: getItemsByDate(items, date),
+      key: title,
     };
 
     const nextDate = past

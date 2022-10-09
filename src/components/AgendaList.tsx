@@ -32,6 +32,7 @@ export interface AgendaListProps {
   contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
   onScroll?: ListProps['onScroll'];
+  onScrollToIndexFailed?: ListProps['onScrollToIndexFailed'];
   showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
   onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
@@ -101,7 +102,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     past: true,
   });
 
-  private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
+  private keyExtractor: Props['keyExtractor'] = (item, index) =>
+    item.id || String(index);
 
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
@@ -182,6 +184,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
+  private onScrollToIndexFailed: Props['onScrollToIndexFailed'] = info => {
+    console.log('onScrollToIndexFailed info', info);
+  };
+
   public scrollToTop = () =>
     this.scrollToDate(this.getInitialDate().format(DATE_FORMAT));
 
@@ -251,6 +257,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       keyboardShouldPersistTaps,
       showsVerticalScrollIndicator,
       onEndReachedThreshold,
+      onScrollToIndexFailed,
       ItemSeparatorComponent,
       ListEmptyComponent,
     } = this.props;
@@ -279,6 +286,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         onEndReached={this.loadMoreFutureItems}
         onEndReachedThreshold={onEndReachedThreshold}
         onLayout={onLayout}
+        onScrollToIndexFailed={
+          onScrollToIndexFailed || this.onScrollToIndexFailed
+        }
       />
     );
   }
