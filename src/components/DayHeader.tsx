@@ -1,17 +1,14 @@
 import {StyleSheet, Text, View} from 'react-native';
 import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
-import {AgendaSection} from '~types';
 import dayjs from '~utils/dayjs';
 
 interface Props {
-  section: AgendaSection;
+  date: string;
 }
 
-export default function DayHeader({section}: Props) {
-  const {title} = section;
-
-  const date = dayjs(title).calendar(null, {
+export default function DayHeader({date}: Props) {
+  const title = dayjs(date).calendar(null, {
     sameDay: '[Today,] dddd, D MMMM',
     nextDay: '[Tomorrow,], dddd, D MMMM',
     nextWeek: 'dddd, D MMMM',
@@ -22,7 +19,7 @@ export default function DayHeader({section}: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{date.toLocaleUpperCase()}</Text>
+      <Text style={styles.title}>{title.toLocaleUpperCase()}</Text>
     </View>
   );
 }

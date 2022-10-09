@@ -102,7 +102,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   );
 
   private renderDayHeader: Props['renderDayHeader'] = ({section}) => (
-    <DayHeader section={section} />
+    <DayHeader date={section.title} />
   );
 
   private renderEmptyDay: Props['renderEmptyDay'] = ({section}) => {
