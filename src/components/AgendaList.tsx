@@ -30,7 +30,7 @@ export interface AgendaListProps {
   initialDate?: string;
   showEmptyInitialDay?: boolean;
   items: AgendaItem[];
-  dateHeaderHeight?: number;
+  itemHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
   testID?: ListProps['testID'];
   style?: ListProps['style'];
@@ -63,7 +63,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     pastItemsMaxDays: MAX_NUMBER_OF_PAST_DAYS,
     weekStart: RRule.SU,
     showEmptyInitialDay: true,
-    dateHeaderHeight: ITEM_HEIGHT,
+    itemHeight: ITEM_HEIGHT,
     animateScrollToTop: false,
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
@@ -224,6 +224,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const {
+      itemHeight,
       testID,
       loading,
       onRefresh,
@@ -243,7 +244,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         data={this.state.sections}
         contentContainerStyle={styles.container}
         testID={testID}
-        estimatedItemSize={ITEM_HEIGHT}
+        estimatedItemSize={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
         refreshing={loading}
         onRefresh={onRefresh}
