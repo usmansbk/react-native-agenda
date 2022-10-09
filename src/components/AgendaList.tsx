@@ -1,11 +1,10 @@
+import {FlashList, FlashListProps} from '@shopify/flash-list';
 import dayjs from 'dayjs';
 import React, {createRef, RefObject} from 'react';
-import {SectionList, SectionListProps, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
-import DayHeader from '~components/DayHeader';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
-import EmptyDay from '~components/EmptyDay';
 import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
 import {
@@ -15,10 +14,13 @@ import {
   MAX_NUMBER_OF_FUTURE_DAYS,
   MAX_NUMBER_OF_PAST_DAYS,
 } from '~constants';
-import {AgendaItem, AgendaSection} from '~types';
+import {AgendaItem} from '~types';
 import {calendarGenerator} from '~utils/calendarGenerator';
+import DayHeader from './DayHeader';
+import Paginate from './Paginate';
 
-type ListProps = SectionListProps<AgendaItem, AgendaSection>;
+type Section = string | AgendaItem;
+type ListProps = FlashListProps<Section>;
 
 export interface AgendaListProps {
   weekStart?: Weekday;
@@ -35,29 +37,21 @@ export interface AgendaListProps {
   contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
   onScroll?: ListProps['onScroll'];
-  onScrollToIndexFailed?: ListProps['onScrollToIndexFailed'];
   showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
   onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
-  renderDayHeader?: ListProps['renderSectionHeader'];
   renderItem?: ListProps['renderItem'];
-  renderEmptyDay?: ListProps['renderSectionFooter'];
-  getItemLayout?: ListProps['getItemLayout'];
-  initialNumToRender?: ListProps['initialNumToRender'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
   ListEmptyComponent?: ListProps['ListEmptyComponent'];
-  viewabilityConfig?: ListProps['viewabilityConfig'];
-  viewabilityConfigCallbackPairs?: ListProps['viewabilityConfigCallbackPairs'];
-  onViewableItemsChanged?: ListProps['onViewableItemsChanged'];
 }
 
 type Props = AgendaListProps;
 
 interface State {
-  sections: AgendaSection[];
+  sections: Section[];
   hasMoreUpcoming: boolean;
   hasMorePast: boolean;
 }
@@ -71,10 +65,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     showEmptyInitialDay: true,
     dateHeaderHeight: ITEM_HEIGHT,
     animateScrollToTop: false,
-    initialNumToRender: 1,
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
+    onEndReachedThreshold: 0.5,
   };
 
   state: Readonly<State> = {
@@ -86,11 +80,15 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private initialLoadTimer: number | undefined;
   private loadMoreUpcomingTimer: number | undefined;
 
-  private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
+  private ref: RefObject<FlashList<Section>> = createRef();
 
   private getInitialDate = () => {
     const {initialDate} = this.props;
     return initialDate ? dayjs(initialDate) : dayjs();
+  };
+
+  private getItemType: ListProps['getItemType'] = item => {
+    return typeof item === 'string' ? 'sectionHeader' : 'row';
   };
 
   private calendarConfig = {
@@ -109,41 +107,24 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     past: true,
   });
 
-  private keyExtractor: Props['keyExtractor'] = ({id}) => id;
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
-  private renderItem: Props['renderItem'] = ({item}) => (
-    <DefaultAgendaItem item={item} onPress={this.onPressItem} />
-  );
-
-  private renderDayHeader: Props['renderDayHeader'] = ({section}) => {
-    const title = dayjs(section.title).calendar(null, DAY_FORMATS);
-    return <DayHeader title={title} />;
-  };
-
-  private renderEmptyDay: Props['renderEmptyDay'] = ({section}) => {
-    if (!section.data.length) {
-      return <EmptyDay />;
+  private renderItem: Props['renderItem'] = ({item}) => {
+    if (typeof item === 'string') {
+      const title = dayjs(item).calendar(null, DAY_FORMATS);
+      return <DayHeader title={title} />;
     }
-    return null;
-  };
-
-  private getItemLayout: Props['getItemLayout'] = (_data, index) => {
-    return {
-      length: ITEM_HEIGHT,
-      offset: index * ITEM_HEIGHT,
-      index,
-    };
+    return <DefaultAgendaItem item={item} onPress={this.onPressItem} />;
   };
 
   private getUpcomingItems = (maxNumOfDays = MAX_NUMBER_OF_FUTURE_DAYS) => {
-    const sections: AgendaSection[] = [];
+    const sections: (string | AgendaItem)[] = [];
     let hasMoreUpcoming = this.state.hasMoreUpcoming;
 
     for (let i = 0; i < maxNumOfDays; i += 1) {
       const section = this.upcomingItems.next();
       if (!section.done) {
-        sections.push(section.value);
+        sections.push(section.value.title, ...section.value.data);
       } else {
         hasMoreUpcoming = !section.done;
         break;
@@ -156,13 +137,13 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   private getPastItems = (maxNumOfDays = MAX_NUMBER_OF_PAST_DAYS) => {
-    const sections: AgendaSection[] = [];
+    const sections: Section[] = [];
     let hasMorePast = this.state.hasMorePast;
 
     for (let i = 0; i < maxNumOfDays; i += 1) {
       const section = this.pastItems.next();
       if (!section.done) {
-        sections.push(section.value);
+        sections.push(section.value.title, ...section.value.data);
       } else {
         hasMorePast = !section.done;
         break;
@@ -190,24 +171,16 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
-  private onScrollToIndexFailed: Props['onScrollToIndexFailed'] = info => {
-    console.warn('onScrollToIndexFailed:', info);
-  };
-
   public scrollToTop = () =>
     this.scrollToDate(this.getInitialDate().format(DATE_FORMAT));
 
-  public scrollToDate = (date: string, itemIndex = 1, viewPosition = 0) => {
-    const sectionIndex = this.state.sections.findIndex(
-      section => section.title === date,
-    );
+  public scrollToDate = (date: string, viewPosition = 0) => {
+    const index = this.state.sections.findIndex(section => section === date);
 
-    if (sectionIndex !== -1) {
-      this.ref.current?.scrollToLocation({
-        itemIndex,
-        sectionIndex,
+    if (index !== -1) {
+      this.ref.current?.scrollToIndex({
+        index,
         viewPosition,
-        viewOffset: this.props.dateHeaderHeight,
         animated: this.props.animateScrollToTop,
       });
     }
@@ -252,61 +225,38 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   render(): React.ReactNode {
     const {
       testID,
-      style,
-      contentContainerStyle,
       loading,
       onRefresh,
-      onLayout,
-      onScroll,
       refreshControl,
       renderItem,
-      renderDayHeader,
-      renderEmptyDay,
-      getItemLayout,
       keyExtractor,
-      initialNumToRender,
       keyboardShouldPersistTaps,
       showsVerticalScrollIndicator,
-      onEndReachedThreshold,
-      onScrollToIndexFailed,
-      ItemSeparatorComponent,
       ListEmptyComponent,
-      viewabilityConfig,
-      viewabilityConfigCallbackPairs,
-      onViewableItemsChanged,
+      ItemSeparatorComponent,
+      onEndReachedThreshold,
     } = this.props;
 
     return (
-      <SectionList
-        stickySectionHeadersEnabled
-        testID={testID}
+      <FlashList
         ref={this.ref}
-        style={[styles.container, style]}
+        data={this.state.sections}
+        contentContainerStyle={styles.container}
+        testID={testID}
+        estimatedItemSize={ITEM_HEIGHT}
+        renderItem={renderItem || this.renderItem}
         refreshing={loading}
         onRefresh={onRefresh}
-        onScroll={onScroll}
-        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         refreshControl={refreshControl}
-        initialNumToRender={initialNumToRender}
-        sections={this.state.sections}
-        renderItem={renderItem || this.renderItem}
-        renderSectionHeader={renderDayHeader || this.renderDayHeader}
-        renderSectionFooter={renderEmptyDay || this.renderEmptyDay}
-        keyExtractor={keyExtractor || this.keyExtractor}
-        contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
-        getItemLayout={getItemLayout || this.getItemLayout}
-        ItemSeparatorComponent={ItemSeparatorComponent}
-        ListEmptyComponent={ListEmptyComponent}
+        showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         onEndReached={this.loadMoreFutureItems}
         onEndReachedThreshold={onEndReachedThreshold}
-        onLayout={onLayout}
-        onScrollToIndexFailed={
-          onScrollToIndexFailed || this.onScrollToIndexFailed
-        }
-        viewabilityConfig={viewabilityConfig}
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs}
-        onViewableItemsChanged={onViewableItemsChanged}
+        keyboardShouldPersistTaps={keyboardShouldPersistTaps}
+        keyExtractor={keyExtractor}
+        getItemType={this.getItemType}
+        ListEmptyComponent={ListEmptyComponent}
+        ListFooterComponent={this.state.hasMoreUpcoming ? Paginate : null}
+        ItemSeparatorComponent={ItemSeparatorComponent}
       />
     );
   }
@@ -315,8 +265,5 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background,
-  },
-  contentContainer: {
-    flexGrow: 1,
   },
 });
