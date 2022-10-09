@@ -22,6 +22,7 @@ type ListProps = SectionListProps<AgendaItem, AgendaSection>;
 export interface AgendaListProps {
   weekStart?: Weekday;
   loading?: boolean;
+  pastItemsMaxDays?: number;
   animateScrollToTop?: boolean;
   initialDate?: string;
   showEmptyInitialDay?: boolean;
@@ -46,6 +47,9 @@ export interface AgendaListProps {
   initialNumToRender?: ListProps['initialNumToRender'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
   ListEmptyComponent?: ListProps['ListEmptyComponent'];
+  viewabilityConfig?: ListProps['viewabilityConfig'];
+  viewabilityConfigCallbackPairs?: ListProps['viewabilityConfigCallbackPairs'];
+  onViewableItemsChanged?: ListProps['onViewableItemsChanged'];
 }
 
 type Props = AgendaListProps;
@@ -60,6 +64,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static displayName = 'AgendaList';
 
   static defaultProps: Readonly<Partial<Props>> = {
+    pastItemsMaxDays: MAX_NUMBER_OF_PAST_DAYS,
     weekStart: RRule.SU,
     showEmptyInitialDay: true,
     dateHeaderHeight: ITEM_HEIGHT,
@@ -185,7 +190,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   private onScrollToIndexFailed: Props['onScrollToIndexFailed'] = info => {
-    console.log('onScrollToIndexFailed info', info);
+    console.warn('onScrollToIndexFailed:', info);
   };
 
   public scrollToTop = () =>
@@ -209,7 +214,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   componentDidMount = () => {
     this.initialLoadTimer = setTimeout(() => {
-      const {sections: pastSections, hasMorePast} = this.getPastItems();
+      const {sections: pastSections, hasMorePast} = this.getPastItems(
+        this.props.pastItemsMaxDays,
+      );
       const {sections: upcomingSections, hasMoreUpcoming} =
         this.getUpcomingItems();
 
@@ -260,6 +267,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       onScrollToIndexFailed,
       ItemSeparatorComponent,
       ListEmptyComponent,
+      viewabilityConfig,
+      viewabilityConfigCallbackPairs,
+      onViewableItemsChanged,
     } = this.props;
 
     return (
@@ -289,6 +299,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         onScrollToIndexFailed={
           onScrollToIndexFailed || this.onScrollToIndexFailed
         }
+        viewabilityConfig={viewabilityConfig}
+        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs}
+        onViewableItemsChanged={onViewableItemsChanged}
       />
     );
   }
