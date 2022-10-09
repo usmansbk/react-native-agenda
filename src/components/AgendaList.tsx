@@ -17,7 +17,7 @@ import {
 import {AgendaItem} from '~types';
 import {calendarGenerator} from '~utils/calendarGenerator';
 import DayHeader from './DayHeader';
-import Paginate from './Paginate';
+import Footer from './Footer';
 
 type Section = string | AgendaItem;
 type ListProps = FlashListProps<Section>;
@@ -255,7 +255,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         keyExtractor={keyExtractor}
         getItemType={this.getItemType}
         ListEmptyComponent={ListEmptyComponent}
-        ListFooterComponent={this.state.hasMoreUpcoming ? Paginate : null}
+        ListFooterComponent={this.state.hasMoreUpcoming ? Footer : null}
         ItemSeparatorComponent={ItemSeparatorComponent}
       />
     );

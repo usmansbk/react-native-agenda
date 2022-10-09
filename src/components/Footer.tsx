@@ -1,7 +1,7 @@
 import {StyleSheet, View} from 'react-native';
 import {ITEM_HEIGHT} from '~constants';
 
-export default function Paginate() {
+export default function Footer() {
   return <View style={styles.container} />;
 }
 
