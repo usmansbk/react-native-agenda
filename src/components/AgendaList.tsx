@@ -109,9 +109,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     past: true,
   });
 
-  private keyExtractor: Props['keyExtractor'] = ({id}, index) =>
-    id || String(index);
-
+  private keyExtractor: Props['keyExtractor'] = ({id}) => id;
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
   private renderItem: Props['renderItem'] = ({item}) => (

@@ -26,7 +26,15 @@ function DefaultAgendaItem({item, onPress}: Props) {
   );
 }
 
-export default memo(DefaultAgendaItem);
+function areEqual(prev: Props, next: Props) {
+  return (
+    prev.item.title === next.item.title &&
+    prev.item.startDate === next.item.startDate &&
+    prev.item.startTime === next.item.startTime
+  );
+}
+
+export default memo(DefaultAgendaItem, areEqual);
 
 const styles = StyleSheet.create({
   container: {
