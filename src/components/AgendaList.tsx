@@ -3,12 +3,8 @@ import dayjs from 'dayjs';
 import React, {createRef, RefObject} from 'react';
 import {StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
-import DefaultAgendaItem from '~components/DefaultAgendaItem';
-import Divider from '~components/Divider';
-import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
 import {
-  DATE_FORMAT,
   DAY_FORMATS,
   ITEM_HEIGHT,
   MAX_NUMBER_OF_FUTURE_DAYS,
@@ -17,7 +13,10 @@ import {
 import {AgendaItem} from '~types';
 import {calendarGenerator} from '~utils/calendarGenerator';
 import DayHeader from './DayHeader';
+import DefaultAgendaItem from './DefaultAgendaItem';
+import Divider from './Divider';
 import Footer from './Footer';
+import ListEmpty from './ListEmpty';
 
 type Section = string | AgendaItem;
 type ListProps = FlashListProps<Section>;
@@ -68,7 +67,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
-    onEndReachedThreshold: 0.5,
+    onEndReachedThreshold: 1,
   };
 
   state: Readonly<State> = {
@@ -171,19 +170,14 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
-  public scrollToTop = () =>
-    this.scrollToDate(this.getInitialDate().format(DATE_FORMAT));
+  public scrollToTop = () => this.scrollToDate('2023-11-10');
 
   public scrollToDate = (date: string, viewPosition = 0) => {
-    const index = this.state.sections.findIndex(section => section === date);
-
-    if (index !== -1) {
-      this.ref.current?.scrollToIndex({
-        index,
-        viewPosition,
-        animated: this.props.animateScrollToTop,
-      });
-    }
+    this.ref.current?.scrollToItem({
+      item: date,
+      viewPosition,
+      animated: this.props.animateScrollToTop,
+    });
   };
 
   componentDidMount = () => {
@@ -224,6 +218,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const {
+      items,
       itemHeight,
       testID,
       loading,
@@ -255,7 +250,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         keyExtractor={keyExtractor}
         getItemType={this.getItemType}
-        ListEmptyComponent={ListEmptyComponent}
+        ListEmptyComponent={items.length ? ListEmptyComponent : null}
         ListFooterComponent={this.state.hasMoreUpcoming ? Footer : null}
         ItemSeparatorComponent={ItemSeparatorComponent}
       />
