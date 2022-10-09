@@ -1,6 +1,6 @@
 import {Frequency, RRule, RRuleSet, Weekday} from 'rrule';
-import {AgendaItem, AgendaSection} from 'types';
 import {DATE_FORMAT} from '~constants';
+import {AgendaItem, AgendaSection} from '~types';
 import dayjs from '~utils/dayjs';
 
 function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
