@@ -10,7 +10,6 @@ function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   if (recurring) {
     const rule = new RRule({
       dtstart: eventDate,
-      wkst: RRule.SU,
       freq: recurring.freq,
     });
 
@@ -91,7 +90,6 @@ function createDateRules(
         new RRule({
           dtstart: eventDate,
           freq: recurring?.freq,
-          wkst: RRule.SU,
         }),
       );
     } else {
