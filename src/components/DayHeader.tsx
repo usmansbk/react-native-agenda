@@ -1,6 +1,6 @@
 import {StyleSheet, Text, View} from 'react-native';
 import colors from '~config/colors';
-import {dayFormats, ITEM_HEIGHT} from '~constants';
+import {DAY_FORMATS, ITEM_HEIGHT} from '~constants';
 import dayjs from '~utils/dayjs';
 
 interface Props {
@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default function DayHeader({date}: Props) {
-  const title = dayjs(date).calendar(null, dayFormats);
+  const title = dayjs(date).calendar(null, DAY_FORMATS);
 
   return (
     <View style={styles.container}>

@@ -5,7 +5,7 @@ export const TIME_FORMAT = 'HH:mm';
 
 export const ITEM_HEIGHT = 40;
 
-export const dayFormats: DayFormats = {
+export const DAY_FORMATS: DayFormats = {
   sameDay: '[Today,] dddd, D MMMM',
   nextDay: '[Tomorrow,], dddd, D MMMM',
   nextWeek: 'dddd, D MMMM',
