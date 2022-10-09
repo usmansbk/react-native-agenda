@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import React, {createRef, RefObject} from 'react';
 import {SectionList, SectionListProps, StyleSheet} from 'react-native';
+import {RRule, Weekday} from 'rrule';
 import {AgendaItem, AgendaSection} from 'types';
 import DayHeader from '~components/DayHeader';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
@@ -14,6 +15,7 @@ import {calendarGenerator} from '~utils/calendarGenerator';
 type ListProps = SectionListProps<AgendaItem, AgendaSection>;
 
 export interface AgendaListProps {
+  weekStart?: Weekday;
   loading?: boolean;
   animateScroll?: boolean;
   initialDate?: string;
@@ -49,6 +51,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static displayName = 'AgendaList';
 
   static defaultProps: Readonly<Partial<Props>> = {
+    weekStart: RRule.SU,
     showEmptyInitialDay: true,
     dateHeaderHeight: ITEM_HEIGHT,
     animateScroll: false,
@@ -74,16 +77,20 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     return initialDate ? dayjs(initialDate) : dayjs();
   };
 
-  private upcomingItems = calendarGenerator({
+  private calendarConfig = {
     items: this.props.items,
     initialDate: this.getInitialDate(),
-    showInitialDay: this.props.showEmptyInitialDay,
+    weekStart: this.props.weekStart,
+  };
+
+  private upcomingItems = calendarGenerator({
+    ...this.calendarConfig,
+    showInitialDay: true,
   });
 
   private pastItems = calendarGenerator({
+    ...this.calendarConfig,
     past: true,
-    items: this.props.items,
-    initialDate: this.getInitialDate(),
   });
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;

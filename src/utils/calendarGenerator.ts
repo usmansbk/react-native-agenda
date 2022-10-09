@@ -1,4 +1,4 @@
-import {Frequency, RRule, RRuleSet} from 'rrule';
+import {Frequency, RRule, RRuleSet, Weekday} from 'rrule';
 import {AgendaItem, AgendaSection} from 'types';
 import {DATE_FORMAT} from '~constants';
 import dayjs from '~utils/dayjs';
@@ -57,11 +57,17 @@ type CreateDateRulesOptions = {
   showEmptyDays?: boolean;
   showInitialDay?: boolean;
   initialDate?: dayjs.Dayjs;
+  weekStart?: Weekday;
 };
 
 function createDateRules(
   events: AgendaItem[],
-  {initialDate, showInitialDay, showEmptyDays}: CreateDateRulesOptions,
+  {
+    initialDate,
+    showInitialDay,
+    showEmptyDays,
+    weekStart,
+  }: CreateDateRulesOptions,
 ) {
   if (showEmptyDays && initialDate) {
     return new RRule({
@@ -90,6 +96,7 @@ function createDateRules(
         new RRule({
           dtstart: eventDate,
           freq: recurring?.freq,
+          wkst: weekStart,
         }),
       );
     } else {
@@ -117,6 +124,7 @@ export function* calendarGenerator({
   past,
   showEmptyDays,
   showInitialDay,
+  weekStart,
 }: CalendarOptions & CreateDateRulesOptions): Generator<
   AgendaSection,
   unknown,
@@ -126,6 +134,7 @@ export function* calendarGenerator({
     showEmptyDays,
     initialDate,
     showInitialDay,
+    weekStart,
   });
 
   const offsetDate = initialDate.startOf('day').toDate();
