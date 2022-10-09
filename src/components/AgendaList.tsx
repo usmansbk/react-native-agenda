@@ -7,7 +7,6 @@ import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
 import EmptyDay from '~components/EmptyDay';
 import ListEmpty from '~components/ListEmpty';
-import colors from '~config/colors';
 import {
   DATE_FORMAT,
   ITEM_HEIGHT,
@@ -284,6 +283,5 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 const styles = StyleSheet.create({
   contentContainer: {
     flexGrow: 1,
-    backgroundColor: colors.background,
   },
 });
