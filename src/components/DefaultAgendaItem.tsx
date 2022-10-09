@@ -18,7 +18,7 @@ function DefaultAgendaItem({item, onPress}: Props) {
     <TouchableOpacity onPress={onPress && handlePress}>
       <View style={styles.container}>
         <Text style={styles.time}>{startTime}</Text>
-        <Text ellipsizeMode="tail" style={styles.title}>
+        <Text numberOfLines={1} ellipsizeMode="tail" style={styles.title}>
           {title}
         </Text>
       </View>
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 14,
     color: colors.text,
+    flex: 1,
   },
   time: {
     fontWeight: 'bold',
