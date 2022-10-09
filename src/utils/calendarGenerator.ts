@@ -6,21 +6,21 @@ import dayjs from '~utils/dayjs';
 function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   const {startDate, recurring} = item;
 
-  let eventDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
+  let itemDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
   if (recurring) {
     const rule = new RRule({
-      dtstart: eventDate,
+      dtstart: itemDate,
       freq: recurring.freq,
     });
 
     const nextDate = rule.after(date.toDate(), true);
 
     if (nextDate) {
-      eventDate = nextDate;
+      itemDate = nextDate;
     }
   }
 
-  return date.isSame(eventDate, 'date');
+  return date.isSame(itemDate, 'date');
 }
 
 function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
