@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {AgendaItem} from 'types';
 import Agenda from '~index';
 import {generateItems} from '~mockData';
+import {AgendaItem} from '~types';
 
 function App() {
   const [events] = useState<AgendaItem[]>(generateItems());
