@@ -9,7 +9,6 @@ export interface AgendaItem {
   title: string;
   startDate: string;
   startTime?: string;
-  endTime?: string;
   recurring?: Recurrence;
 }
 
