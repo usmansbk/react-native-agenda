@@ -109,8 +109,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     past: true,
   });
 
-  private keyExtractor: Props['keyExtractor'] = (item, index) =>
-    item.id || String(index);
+  private keyExtractor: Props['keyExtractor'] = ({id}, index) =>
+    id || String(index);
 
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
@@ -280,9 +280,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
     return (
       <SectionList
+        stickySectionHeadersEnabled
         testID={testID}
         ref={this.ref}
-        stickySectionHeadersEnabled
         style={[styles.container, style]}
         refreshing={loading}
         onRefresh={onRefresh}

@@ -16,7 +16,6 @@ export interface AgendaItem {
 export interface AgendaSection {
   title: string;
   data: AgendaItem[];
-  key?: string;
 }
 
 export interface DayFormats {

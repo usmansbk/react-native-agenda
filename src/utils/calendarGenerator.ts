@@ -152,7 +152,6 @@ export function* calendarGenerator({
     yield {
       title,
       data: getItemsByDate(items, date),
-      key: title,
     };
 
     const nextDate = past
