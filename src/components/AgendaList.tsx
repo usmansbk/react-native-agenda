@@ -28,6 +28,8 @@ export interface AgendaListProps {
   items: AgendaItem[];
   dateHeaderHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
+  style?: ListProps['style'];
+  contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
   showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
@@ -232,6 +234,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const {
+      style,
+      contentContainerStyle,
       loading,
       onRefresh,
       onLayout,
@@ -253,6 +257,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       <SectionList
         ref={this.ref}
         stickySectionHeadersEnabled
+        style={style}
         refreshing={loading}
         onRefresh={onRefresh}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
@@ -264,7 +269,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         renderSectionHeader={renderDayHeader || this.renderDayHeader}
         renderSectionFooter={renderEmptyDay || this.renderEmptyDay}
         keyExtractor={keyExtractor || this.keyExtractor}
-        contentContainerStyle={styles.contentContainer}
+        contentContainerStyle={[styles.contentContainer, contentContainerStyle]}
         getItemLayout={getItemLayout || this.getItemLayout}
         ItemSeparatorComponent={ItemSeparatorComponent}
         ListEmptyComponent={ListEmptyComponent}
