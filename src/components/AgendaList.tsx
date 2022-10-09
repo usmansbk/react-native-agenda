@@ -207,7 +207,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
           hasMoreUpcoming,
         },
         () => {
-          if (sections.length) {
+          if (this.state.sections.length) {
             this.scrollToTop();
           }
         },
