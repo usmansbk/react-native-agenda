@@ -1,8 +1,8 @@
 import {useCallback} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {AgendaItem} from 'types';
 import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
+import {AgendaItem} from '~types';
 
 interface Props {
   item: AgendaItem;

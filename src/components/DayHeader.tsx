@@ -1,7 +1,7 @@
 import {StyleSheet, Text, View} from 'react-native';
-import {AgendaSection} from 'types';
 import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
+import {AgendaSection} from '~types';
 import dayjs from '~utils/dayjs';
 
 interface Props {
