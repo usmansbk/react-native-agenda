@@ -31,6 +31,7 @@ export interface AgendaListProps {
   style?: ListProps['style'];
   contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
+  onScroll?: ListProps['onScroll'];
   showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
   onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
@@ -239,6 +240,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       loading,
       onRefresh,
       onLayout,
+      onScroll,
       refreshControl,
       renderItem,
       renderDayHeader,
@@ -260,6 +262,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         style={[styles.container, style]}
         refreshing={loading}
         onRefresh={onRefresh}
+        onScroll={onScroll}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         refreshControl={refreshControl}
