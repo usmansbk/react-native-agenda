@@ -1,4 +1,4 @@
-import {useCallback} from 'react';
+import {memo, useCallback} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
@@ -9,7 +9,7 @@ interface Props {
   onPress?: (item: AgendaItem) => void;
 }
 
-export default function DefaultAgendaItem({item, onPress}: Props) {
+function DefaultAgendaItem({item, onPress}: Props) {
   const {title, startTime} = item;
 
   const handlePress = useCallback(() => onPress?.(item), [item, onPress]);
@@ -25,6 +25,8 @@ export default function DefaultAgendaItem({item, onPress}: Props) {
     </TouchableOpacity>
   );
 }
+
+export default memo(DefaultAgendaItem);
 
 const styles = StyleSheet.create({
   container: {

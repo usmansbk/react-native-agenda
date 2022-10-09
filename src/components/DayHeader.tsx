@@ -1,3 +1,4 @@
+import {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import colors from '~config/colors';
 import {DAY_FORMATS, ITEM_HEIGHT} from '~constants';
@@ -7,7 +8,7 @@ interface Props {
   date: string;
 }
 
-export default function DayHeader({date}: Props) {
+function DayHeader({date}: Props) {
   const title = dayjs(date).calendar(null, DAY_FORMATS);
 
   return (
@@ -16,6 +17,8 @@ export default function DayHeader({date}: Props) {
     </View>
   );
 }
+
+export default memo(DayHeader);
 
 const styles = StyleSheet.create({
   container: {

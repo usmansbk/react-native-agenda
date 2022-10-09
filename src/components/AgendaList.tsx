@@ -112,50 +112,64 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     return null;
   };
 
-  private getItemLayout: Props['getItemLayout'] = (_data, index) => ({
-    length: ITEM_HEIGHT,
-    offset: index * ITEM_HEIGHT,
-    index,
-  });
+  private getItemLayout: Props['getItemLayout'] = (_data, index) => {
+    return {
+      length: ITEM_HEIGHT,
+      offset: index * ITEM_HEIGHT,
+      index,
+    };
+  };
 
-  private loadUpcomingItems = (maxNumOfDays = 50) => {
+  private getUpcomingItems = (maxNumOfDays = 50) => {
     const sections: AgendaSection[] = [];
+    let hasMoreUpcoming = this.state.hasMoreUpcoming;
+
     for (let i = 0; i < maxNumOfDays; i += 1) {
       const section = this.upcomingItems.next();
       if (!section.done) {
         sections.push(section.value);
       } else {
-        this.setState({hasMoreUpcoming: false});
+        hasMoreUpcoming = !section.done;
         break;
       }
     }
-
-    if (sections.length) {
-      this.setState({sections: [...this.state.sections, ...sections]});
-    }
+    return {
+      sections,
+      hasMoreUpcoming,
+    };
   };
 
-  private loadPastItems = (maxNumOfDays = 7) => {
+  private getPastItems = (maxNumOfDays = 7) => {
     const sections: AgendaSection[] = [];
+    let hasMorePast = this.state.hasMorePast;
+
     for (let i = 0; i < maxNumOfDays; i += 1) {
       const section = this.pastItems.next();
       if (!section.done) {
         sections.push(section.value);
       } else {
-        this.setState({hasMorePast: false});
+        hasMorePast = !section.done;
         break;
       }
     }
 
-    if (sections.length) {
-      this.setState({sections: [...sections, ...this.state.sections]});
-    }
+    return {
+      sections,
+      hasMorePast,
+    };
   };
 
   private loadMoreFutureItems = () => {
     if (this.state.hasMoreUpcoming) {
       this.loadMoreUpcomingTimer = setTimeout(() => {
-        this.loadUpcomingItems();
+        const {sections, hasMoreUpcoming} = this.getUpcomingItems();
+
+        this.setState({
+          sections: sections.length
+            ? [...this.state.sections, ...sections]
+            : this.state.sections,
+          hasMoreUpcoming,
+        });
       }, 0);
     }
   };
@@ -181,11 +195,23 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   componentDidMount = () => {
     this.initialLoadTimer = setTimeout(() => {
-      this.loadPastItems();
-      this.loadUpcomingItems();
-      if (this.state.sections.length) {
-        this.scrollToTop();
-      }
+      const {sections: pastSections, hasMorePast} = this.getPastItems();
+      const {sections: upcomingSections, hasMoreUpcoming} =
+        this.getUpcomingItems();
+
+      const sections = [...pastSections, ...upcomingSections];
+      this.setState(
+        {
+          sections: sections.length ? sections : this.state.sections,
+          hasMorePast,
+          hasMoreUpcoming,
+        },
+        () => {
+          if (this.state.sections.length) {
+            this.scrollToTop();
+          }
+        },
+      );
     }, 0);
   };
 
