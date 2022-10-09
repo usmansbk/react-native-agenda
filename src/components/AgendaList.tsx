@@ -30,6 +30,7 @@ export interface AgendaListProps {
   items: AgendaItem[];
   dateHeaderHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
+  testID?: ListProps['testID'];
   style?: ListProps['style'];
   contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
@@ -250,6 +251,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const {
+      testID,
       style,
       contentContainerStyle,
       loading,
@@ -276,6 +278,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
     return (
       <SectionList
+        testID={testID}
         ref={this.ref}
         stickySectionHeadersEnabled
         style={[styles.container, style]}
