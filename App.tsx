@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {SafeAreaView} from 'react-native';
 import Agenda from '~index';
 import {AgendaItem} from '~types';
 
@@ -15,7 +16,11 @@ function App() {
     },
   ]);
 
-  return <Agenda items={events} />;
+  return (
+    <SafeAreaView>
+      <Agenda items={events} />
+    </SafeAreaView>
+  );
 }
 
 export default App;
