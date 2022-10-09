@@ -2,10 +2,10 @@ import dayjs from 'dayjs';
 import React, {createRef, RefObject} from 'react';
 import {SectionList, SectionListProps, StyleSheet} from 'react-native';
 import {AgendaItem, AgendaSection} from 'types';
-import DateHeader from '~components/DateHeader';
+import DayHeader from '~components/DayHeader';
 import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
-import EmptyDate from '~components/EmptyDate';
+import EmptyDay from '~components/EmptyDay';
 import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
 import {DATE_FORMAT, ITEM_HEIGHT} from '~constants';
@@ -16,7 +16,8 @@ type ListProps = SectionListProps<AgendaItem, AgendaSection>;
 export interface AgendaListProps {
   loading?: boolean;
   animateScroll?: boolean;
-  selectedDate?: string;
+  initialDate?: string;
+  showEmptyInitialDay?: boolean;
   items: AgendaItem[];
   dateHeaderHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
@@ -27,9 +28,9 @@ export interface AgendaListProps {
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
-  renderDateHeader?: ListProps['renderSectionHeader'];
+  renderDayHeader?: ListProps['renderSectionHeader'];
   renderItem?: ListProps['renderItem'];
-  renderEmptyDate?: ListProps['renderSectionFooter'];
+  renderEmptyDay?: ListProps['renderSectionFooter'];
   getItemLayout?: ListProps['getItemLayout'];
   initialNumToRender?: ListProps['initialNumToRender'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
@@ -48,6 +49,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static displayName = 'AgendaList';
 
   static defaultProps: Readonly<Partial<Props>> = {
+    showEmptyInitialDay: true,
     dateHeaderHeight: ITEM_HEIGHT,
     animateScroll: false,
     initialNumToRender: 1,
@@ -67,20 +69,21 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private ref: RefObject<SectionList<AgendaItem, AgendaSection>> = createRef();
 
-  private getSelectedDate = () => {
-    const {selectedDate} = this.props;
-    return selectedDate ? dayjs(selectedDate) : dayjs();
+  private getInitialDate = () => {
+    const {initialDate} = this.props;
+    return initialDate ? dayjs(initialDate) : dayjs();
   };
 
   private upcomingItems = calendarGenerator({
     items: this.props.items,
-    selectedDate: this.getSelectedDate(),
+    initialDate: this.getInitialDate(),
+    showInitialDay: this.props.showEmptyInitialDay,
   });
 
   private pastItems = calendarGenerator({
     past: true,
     items: this.props.items,
-    selectedDate: this.getSelectedDate(),
+    initialDate: this.getInitialDate(),
   });
 
   private keyExtractor: Props['keyExtractor'] = (item: AgendaItem) => item.id;
@@ -91,13 +94,13 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     <DefaultAgendaItem item={item} onPress={this.onPressItem} />
   );
 
-  private renderDateHeader: Props['renderDateHeader'] = ({section}) => (
-    <DateHeader section={section} />
+  private renderDayHeader: Props['renderDayHeader'] = ({section}) => (
+    <DayHeader section={section} />
   );
 
-  private renderEmptyDate: Props['renderEmptyDate'] = ({section}) => {
+  private renderEmptyDay: Props['renderEmptyDay'] = ({section}) => {
     if (!section.data.length) {
-      return <EmptyDate />;
+      return <EmptyDay />;
     }
     return null;
   };
@@ -151,7 +154,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   public scrollToTop = () =>
-    this.scrollToDate(this.getSelectedDate().format(DATE_FORMAT));
+    this.scrollToDate(this.getInitialDate().format(DATE_FORMAT));
 
   public scrollToDate = (date: string, itemIndex = 1, viewPosition = 0) => {
     const sectionIndex = this.state.sections.findIndex(
@@ -196,8 +199,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       onLayout,
       refreshControl,
       renderItem,
-      renderDateHeader,
-      renderEmptyDate,
+      renderDayHeader,
+      renderEmptyDay,
       getItemLayout,
       keyExtractor,
       initialNumToRender,
@@ -220,8 +223,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         initialNumToRender={initialNumToRender}
         sections={this.state.sections}
         renderItem={renderItem || this.renderItem}
-        renderSectionHeader={renderDateHeader || this.renderDateHeader}
-        renderSectionFooter={renderEmptyDate || this.renderEmptyDate}
+        renderSectionHeader={renderDayHeader || this.renderDayHeader}
+        renderSectionFooter={renderEmptyDay || this.renderEmptyDay}
         keyExtractor={keyExtractor || this.keyExtractor}
         contentContainerStyle={styles.contentContainer}
         getItemLayout={getItemLayout || this.getItemLayout}

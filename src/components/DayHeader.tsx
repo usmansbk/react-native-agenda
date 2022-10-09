@@ -8,7 +8,7 @@ interface Props {
   section: AgendaSection;
 }
 
-export default function DateHeader({section}: Props) {
+export default function DayHeader({section}: Props) {
   const {title} = section;
 
   const date = dayjs(title).calendar(null, {

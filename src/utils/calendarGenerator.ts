@@ -54,8 +54,34 @@ function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
   });
 }
 
-function createDateRules(events: AgendaItem[]) {
+type CreateDateRulesOptions = {
+  showEmptyDays?: boolean;
+  showInitialDay?: boolean;
+  initialDate?: dayjs.Dayjs;
+};
+
+function createDateRules(
+  events: AgendaItem[],
+  {initialDate, showInitialDay, showEmptyDays}: CreateDateRulesOptions,
+) {
+  if (showEmptyDays && initialDate) {
+    return new RRule({
+      dtstart: initialDate.utc().startOf('day').toDate(),
+      freq: Frequency.DAILY,
+    });
+  }
+
   const rules = new RRuleSet();
+  if (showInitialDay && initialDate) {
+    const date = initialDate.utc().startOf('day').toDate();
+    rules.rrule(
+      new RRule({
+        dtstart: date,
+        freq: Frequency.DAILY,
+        until: date,
+      }),
+    );
+  }
 
   events.forEach(event => {
     const {startDate, recurring} = event;
@@ -78,23 +104,33 @@ function createDateRules(events: AgendaItem[]) {
       );
     }
   });
-
   return rules;
 }
 
 type CalendarOptions = {
   items: AgendaItem[];
-  selectedDate: dayjs.Dayjs;
+  initialDate: dayjs.Dayjs;
   past?: boolean;
 };
 
 export function* calendarGenerator({
   items,
-  selectedDate,
+  initialDate,
   past,
-}: CalendarOptions): Generator<AgendaSection, unknown, any> {
-  const rules = createDateRules(items);
-  const offsetDate = selectedDate.startOf('day').toDate();
+  showEmptyDays,
+  showInitialDay,
+}: CalendarOptions & CreateDateRulesOptions): Generator<
+  AgendaSection,
+  unknown,
+  any
+> {
+  const rules = createDateRules(items, {
+    showEmptyDays,
+    initialDate,
+    showInitialDay,
+  });
+
+  const offsetDate = initialDate.startOf('day').toDate();
   const nextDate = past
     ? rules?.before(offsetDate, true)
     : rules?.after(offsetDate, true);
@@ -113,6 +149,7 @@ export function* calendarGenerator({
     const nextDate = past
       ? rules?.before(date.toDate())
       : rules?.after(date.toDate());
+    console.log('nextDate', nextDate, 'past', past);
 
     if (!nextDate) {
       break;
