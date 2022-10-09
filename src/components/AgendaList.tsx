@@ -216,27 +216,29 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   componentDidMount = () => {
-    this.initialLoadTimer = setTimeout(() => {
-      const {sections: pastSections, hasMorePast} = this.getPastItems(
-        this.props.pastItemsMaxDays,
-      );
-      const {sections: upcomingSections, hasMoreUpcoming} =
-        this.getUpcomingItems();
+    if (this.props.items.length) {
+      this.initialLoadTimer = setTimeout(() => {
+        const {sections: pastSections, hasMorePast} = this.getPastItems(
+          this.props.pastItemsMaxDays,
+        );
+        const {sections: upcomingSections, hasMoreUpcoming} =
+          this.getUpcomingItems();
 
-      const sections = [...pastSections, ...upcomingSections];
-      this.setState(
-        {
-          sections: sections.length ? sections : this.state.sections,
-          hasMorePast,
-          hasMoreUpcoming,
-        },
-        () => {
-          if (this.state.sections.length) {
-            this.scrollToTop();
-          }
-        },
-      );
-    }, 0);
+        const sections = [...pastSections, ...upcomingSections];
+        this.setState(
+          {
+            sections: sections.length ? sections : this.state.sections,
+            hasMorePast,
+            hasMoreUpcoming,
+          },
+          () => {
+            if (this.state.sections.length) {
+              this.scrollToTop();
+            }
+          },
+        );
+      }, 0);
+    }
   };
 
   componentWillUnmount = () => {
