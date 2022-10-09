@@ -13,3 +13,6 @@ export const DAY_FORMATS: DayFormats = {
   lastWeek: 'dddd, D MMMM',
   sameElse: 'dddd, D MMMM, YYYY',
 };
+
+export const MAX_NUMBER_OF_FUTURE_DAYS = 50;
+export const MAX_NUMBER_OF_PAST_DAYS = 7;

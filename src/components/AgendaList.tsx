@@ -8,7 +8,12 @@ import Divider from '~components/Divider';
 import EmptyDay from '~components/EmptyDay';
 import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
-import {DATE_FORMAT, ITEM_HEIGHT} from '~constants';
+import {
+  DATE_FORMAT,
+  ITEM_HEIGHT,
+  MAX_NUMBER_OF_FUTURE_DAYS,
+  MAX_NUMBER_OF_PAST_DAYS,
+} from '~constants';
 import {AgendaItem, AgendaSection} from '~types';
 import {calendarGenerator} from '~utils/calendarGenerator';
 
@@ -120,7 +125,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     };
   };
 
-  private getUpcomingItems = (maxNumOfDays = 50) => {
+  private getUpcomingItems = (maxNumOfDays = MAX_NUMBER_OF_FUTURE_DAYS) => {
     const sections: AgendaSection[] = [];
     let hasMoreUpcoming = this.state.hasMoreUpcoming;
 
@@ -139,7 +144,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     };
   };
 
-  private getPastItems = (maxNumOfDays = 7) => {
+  private getPastItems = (maxNumOfDays = MAX_NUMBER_OF_PAST_DAYS) => {
     const sections: AgendaSection[] = [];
     let hasMorePast = this.state.hasMorePast;
 
