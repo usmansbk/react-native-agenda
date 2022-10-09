@@ -127,8 +127,8 @@ export function* calendarGenerator({
   weekStart,
 }: CalendarOptions & CreateDateRulesOptions): Generator<
   AgendaSection,
-  unknown,
-  any
+  AgendaSection | undefined,
+  AgendaSection
 > {
   const rules = createDateRules(items, {
     showEmptyDays,
