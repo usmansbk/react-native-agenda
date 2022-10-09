@@ -10,7 +10,7 @@ import {
   MAX_NUMBER_OF_FUTURE_DAYS,
   MAX_NUMBER_OF_PAST_DAYS,
 } from '~constants';
-import {AgendaItem} from '~types';
+import {AgendaItem, Section} from '~types';
 import {calendarGenerator} from '~utils/calendarGenerator';
 import DayHeader from './DayHeader';
 import DefaultAgendaItem from './DefaultAgendaItem';
@@ -18,7 +18,6 @@ import Divider from './Divider';
 import Footer from './Footer';
 import ListEmpty from './ListEmpty';
 
-type Section = string | AgendaItem;
 type ListProps = FlashListProps<Section>;
 
 export interface AgendaListProps {

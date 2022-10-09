@@ -12,6 +12,8 @@ export interface AgendaItem {
   recurring?: Recurrence;
 }
 
+export type Section = string | AgendaItem;
+
 export interface AgendaSection {
   title: string;
   data: AgendaItem[];
