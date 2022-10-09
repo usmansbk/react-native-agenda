@@ -149,7 +149,6 @@ export function* calendarGenerator({
     const nextDate = past
       ? rules?.before(date.toDate())
       : rules?.after(date.toDate());
-    console.log('nextDate', nextDate, 'past', past);
 
     if (!nextDate) {
       break;
