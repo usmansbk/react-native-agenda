@@ -7,6 +7,7 @@ import DefaultAgendaItem from '~components/DefaultAgendaItem';
 import Divider from '~components/Divider';
 import EmptyDay from '~components/EmptyDay';
 import ListEmpty from '~components/ListEmpty';
+import colors from '~config/colors';
 import {
   DATE_FORMAT,
   ITEM_HEIGHT,
@@ -256,7 +257,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       <SectionList
         ref={this.ref}
         stickySectionHeadersEnabled
-        style={style}
+        style={[styles.container, style]}
         refreshing={loading}
         onRefresh={onRefresh}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
@@ -281,6 +282,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: colors.background,
+  },
   contentContainer: {
     flexGrow: 1,
   },
