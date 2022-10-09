@@ -137,7 +137,7 @@ export function* calendarGenerator({
     weekStart,
   });
 
-  const offsetDate = initialDate.startOf('day').toDate();
+  const offsetDate = initialDate.utc().startOf('day').toDate();
   const nextDate = past
     ? rules?.before(offsetDate, true)
     : rules?.after(offsetDate, true);
