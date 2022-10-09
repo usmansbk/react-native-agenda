@@ -10,6 +10,7 @@ import ListEmpty from '~components/ListEmpty';
 import colors from '~config/colors';
 import {
   DATE_FORMAT,
+  DAY_FORMATS,
   ITEM_HEIGHT,
   MAX_NUMBER_OF_FUTURE_DAYS,
   MAX_NUMBER_OF_PAST_DAYS,
@@ -116,9 +117,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     <DefaultAgendaItem item={item} onPress={this.onPressItem} />
   );
 
-  private renderDayHeader: Props['renderDayHeader'] = ({section}) => (
-    <DayHeader date={section.title} />
-  );
+  private renderDayHeader: Props['renderDayHeader'] = ({section}) => {
+    const title = dayjs(section.title).calendar(null, DAY_FORMATS);
+    return <DayHeader title={title} />;
+  };
 
   private renderEmptyDay: Props['renderEmptyDay'] = ({section}) => {
     if (!section.data.length) {

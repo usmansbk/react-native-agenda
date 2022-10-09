@@ -1,16 +1,13 @@
 import {memo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import colors from '~config/colors';
-import {DAY_FORMATS, ITEM_HEIGHT} from '~constants';
-import dayjs from '~utils/dayjs';
+import {ITEM_HEIGHT} from '~constants';
 
 interface Props {
-  date: string;
+  title: string;
 }
 
-function DayHeader({date}: Props) {
-  const title = dayjs(date).calendar(null, DAY_FORMATS);
-
+function DayHeader({title}: Props) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{title.toLocaleUpperCase()}</Text>
