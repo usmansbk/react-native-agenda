@@ -34,7 +34,6 @@ export interface AgendaListProps {
   onPressItem?: (item: AgendaItem) => void;
   testID?: ListProps['testID'];
   contentContainerStyle?: ListProps['contentContainerStyle'];
-  onLayout?: ListProps['onLayout'];
   onScroll?: ListProps['onScroll'];
   showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
   keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
@@ -65,7 +64,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     maxPastDaysPerBatch: MAX_NUMBER_OF_PAST_DAYS,
     maxFutureDaysPerBatch: MAX_NUMBER_OF_FUTURE_DAYS,
     weekStart: RRule.SU,
-    showEmptyInitialDay: true,
+    showEmptyInitialDay: false,
     itemHeight: ITEM_HEIGHT,
     animateScrollToTop: false,
     showsVerticalScrollIndicator: false,
@@ -113,6 +112,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private upcomingItems = calendarGenerator({
     ...this.calendarConfig,
+    showInitialDay: this.props.showEmptyInitialDay,
   });
 
   private pastItems = calendarGenerator({
