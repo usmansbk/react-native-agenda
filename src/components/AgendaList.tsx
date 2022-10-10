@@ -44,6 +44,7 @@ export interface AgendaListProps {
   renderItem?: ListProps['renderItem'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
   ListEmptyComponent?: ListProps['ListEmptyComponent'];
+  ListFooterComponent?: ListProps['ListFooterComponent'];
 }
 
 type Props = AgendaListProps;
@@ -66,6 +67,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
+    ListFooterComponent: Footer,
     onEndReachedThreshold: 1,
   };
 
@@ -228,15 +230,19 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       keyboardShouldPersistTaps,
       showsVerticalScrollIndicator,
       ListEmptyComponent,
+      ListFooterComponent,
       ItemSeparatorComponent,
       onEndReachedThreshold,
+      contentContainerStyle,
+      style,
     } = this.props;
 
     return (
       <FlashList
         ref={this.ref}
         data={this.state.sections}
-        contentContainerStyle={styles.container}
+        style={style}
+        contentContainerStyle={contentContainerStyle || styles.container}
         testID={testID}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
@@ -250,7 +256,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         keyExtractor={keyExtractor}
         getItemType={this.getItemType}
         ListEmptyComponent={items.length ? ListEmptyComponent : null}
-        ListFooterComponent={this.state.hasMoreUpcoming ? Footer : null}
+        ListFooterComponent={
+          this.state.hasMoreUpcoming ? ListFooterComponent : null
+        }
         ItemSeparatorComponent={ItemSeparatorComponent}
       />
     );
