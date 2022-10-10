@@ -33,7 +33,6 @@ export interface AgendaListProps {
   itemHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
   testID?: ListProps['testID'];
-  style?: ListProps['style'];
   contentContainerStyle?: ListProps['contentContainerStyle'];
   onLayout?: ListProps['onLayout'];
   onScroll?: ListProps['onScroll'];
@@ -56,6 +55,7 @@ interface State {
   hasMoreUpcoming: boolean;
   hasMorePast: boolean;
   initialScrollIndex: number;
+  loading: boolean;
 }
 
 export default class AgendaList extends React.PureComponent<Props, State> {
@@ -80,6 +80,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     hasMorePast: true,
     hasMoreUpcoming: true,
     initialScrollIndex: 0,
+    loading: true,
   };
 
   private initialLoadTimer: number | undefined;
@@ -120,6 +121,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   });
 
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
+
+  private keyExtractor: Props['keyExtractor'] = (item, index) => String(index);
 
   private renderItem: Props['renderItem'] = ({item}) => {
     if (typeof item === 'string') {
@@ -183,6 +186,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
+  private onScroll: ListProps['onScroll'] = e => {
+    this.props.onScroll?.(e);
+  };
+
   private getTopIndex = (sections: Section[]) =>
     sections.findIndex(section => {
       if (typeof section === 'string') {
@@ -195,6 +202,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     this.ref?.scrollToIndex({
       index: this.getTopIndex(this.state.sections),
       viewPosition: 0,
+      animated: false,
     });
 
   public scrollToDate = (date: string, viewPosition = 0) => {
@@ -222,8 +230,11 @@ export default class AgendaList extends React.PureComponent<Props, State> {
           hasMorePast,
           hasMoreUpcoming,
           initialScrollIndex,
+          loading: false,
         });
       }, 0);
+    } else {
+      this.setState({loading: false});
     }
   };
 
@@ -254,33 +265,33 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       ItemSeparatorComponent,
       onEndReachedThreshold,
       contentContainerStyle,
-      style,
     } = this.props;
 
     return (
       <FlashList
         ref={this._ref}
         data={this.state.sections}
-        style={style}
         contentContainerStyle={styles.contentContainer || contentContainerStyle}
         testID={testID}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
+        estimatedFirstItemOffset={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
         initialScrollIndex={this.state.initialScrollIndex}
-        refreshing={loading}
+        refreshing={loading || this.state.loading}
         onRefresh={onRefresh}
         refreshControl={refreshControl}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
         onEndReached={this.loadMoreFutureItems}
         onEndReachedThreshold={onEndReachedThreshold}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
-        keyExtractor={keyExtractor}
+        keyExtractor={keyExtractor || this.keyExtractor}
         getItemType={this.getItemType}
-        ListEmptyComponent={items.length ? ListEmptyComponent : null}
+        ListEmptyComponent={!items.length ? ListEmptyComponent : null}
         ListFooterComponent={
           this.state.hasMoreUpcoming ? ListFooterComponent : null
         }
         ItemSeparatorComponent={ItemSeparatorComponent}
+        onScroll={this.onScroll}
       />
     );
   }

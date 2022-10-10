@@ -15,4 +15,4 @@ export const DAY_FORMATS: DayFormats = {
 };
 
 export const MAX_NUMBER_OF_FUTURE_DAYS = 14;
-export const MAX_NUMBER_OF_PAST_DAYS = 7;
+export const MAX_NUMBER_OF_PAST_DAYS = 365;
