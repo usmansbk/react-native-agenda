@@ -23,7 +23,8 @@ type ListProps = FlashListProps<Section>;
 export interface AgendaListProps {
   weekStart?: Weekday;
   loading?: boolean;
-  pastItemsMaxDays?: number;
+  maxPastDaysPerBatch?: number;
+  maxFutureDaysPerBatch?: number;
   animateScrollToTop?: boolean;
   initialDate?: string;
   showEmptyInitialDay?: boolean;
@@ -59,7 +60,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static displayName = 'AgendaList';
 
   static defaultProps: Readonly<Partial<Props>> = {
-    pastItemsMaxDays: MAX_NUMBER_OF_PAST_DAYS,
+    maxPastDaysPerBatch: MAX_NUMBER_OF_PAST_DAYS,
+    maxFutureDaysPerBatch: MAX_NUMBER_OF_FUTURE_DAYS,
     weekStart: RRule.SU,
     showEmptyInitialDay: true,
     itemHeight: ITEM_HEIGHT,
@@ -185,10 +187,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     if (this.props.items.length) {
       this.initialLoadTimer = setTimeout(() => {
         const {sections: pastSections, hasMorePast} = this.getPastItems(
-          this.props.pastItemsMaxDays,
+          this.props.maxPastDaysPerBatch,
         );
         const {sections: upcomingSections, hasMoreUpcoming} =
-          this.getUpcomingItems();
+          this.getUpcomingItems(this.props.maxFutureDaysPerBatch);
 
         const sections = [...pastSections, ...upcomingSections];
         this.setState(
