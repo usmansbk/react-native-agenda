@@ -91,14 +91,14 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     this.ref = ref;
   };
 
-  private getInitialDate = () => {
+  private get getInitialDate() {
     const {initialDate} = this.props;
     return initialDate ? dayjs(initialDate) : dayjs();
-  };
+  }
 
-  private getInitialDateString = () => {
-    return this.getInitialDate().format(DATE_FORMAT);
-  };
+  private get getInitialDateString() {
+    return this.getInitialDate.format(DATE_FORMAT);
+  }
 
   private getItemType: ListProps['getItemType'] = item => {
     return typeof item === 'string' ? 'sectionHeader' : 'row';
@@ -106,7 +106,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private calendarConfig = {
     items: this.props.items,
-    initialDate: this.getInitialDate(),
+    initialDate: this.getInitialDate,
     weekStart: this.props.weekStart,
   };
 
@@ -186,10 +186,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private getTopIndex = (sections: Section[]) =>
     sections.findIndex(section => {
       if (typeof section === 'string') {
-        return dayjs(section).isSameOrAfter(
-          this.getInitialDateString(),
-          'date',
-        );
+        return dayjs(section).isSameOrAfter(this.getInitialDateString, 'date');
       }
       return false;
     });
