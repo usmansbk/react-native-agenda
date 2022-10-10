@@ -262,7 +262,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         ref={this._ref}
         data={this.state.sections}
         style={style}
-        contentContainerStyle={contentContainerStyle || styles.container}
+        contentContainerStyle={styles.contentContainer || contentContainerStyle}
         testID={testID}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
@@ -287,7 +287,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
     backgroundColor: colors.background,
   },
 });
