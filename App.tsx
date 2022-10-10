@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import Agenda from '~index';
+import Agenda, {Frequency} from '~index';
 import {AgendaItem} from '~types';
 
 function App() {
@@ -8,10 +8,10 @@ function App() {
     {
       id: '1',
       title: 'Scholarships',
-      startDate: '2022-10-10',
+      startDate: '2022-01-10',
       startTime: '19:06',
       recurring: {
-        freq: 1,
+        freq: Frequency.DAILY,
       },
     },
     {

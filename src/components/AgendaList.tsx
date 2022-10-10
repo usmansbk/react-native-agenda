@@ -1,10 +1,11 @@
 import {FlashList, FlashListProps} from '@shopify/flash-list';
 import dayjs from 'dayjs';
-import React, {createRef, RefObject} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
 import colors from '~config/colors';
 import {
+  DATE_FORMAT,
   DAY_FORMATS,
   ITEM_HEIGHT,
   MAX_NUMBER_OF_FUTURE_DAYS,
@@ -54,6 +55,7 @@ interface State {
   sections: Section[];
   hasMoreUpcoming: boolean;
   hasMorePast: boolean;
+  initialScrollIndex: number;
 }
 
 export default class AgendaList extends React.PureComponent<Props, State> {
@@ -77,16 +79,25 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     sections: [],
     hasMorePast: true,
     hasMoreUpcoming: true,
+    initialScrollIndex: 0,
   };
 
   private initialLoadTimer: number | undefined;
   private loadMoreUpcomingTimer: number | undefined;
 
-  private ref: RefObject<FlashList<Section>> = createRef();
+  private ref?: FlashList<Section> | null;
+
+  private _ref = (ref: typeof this.ref) => {
+    this.ref = ref;
+  };
 
   private getInitialDate = () => {
     const {initialDate} = this.props;
     return initialDate ? dayjs(initialDate) : dayjs();
+  };
+
+  private getInitialDateString = () => {
+    return this.getInitialDate().format(DATE_FORMAT);
   };
 
   private getItemType: ListProps['getItemType'] = item => {
@@ -101,7 +112,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private upcomingItems = calendarGenerator({
     ...this.calendarConfig,
-    showInitialDay: true,
   });
 
   private pastItems = calendarGenerator({
@@ -145,7 +155,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     for (let i = 0; i < maxNumOfDays; i += 1) {
       const section = this.pastItems.next();
       if (!section.done) {
-        sections.push(section.value.title, ...section.value.data);
+        sections.push(...section.value.data, section.value.title);
       } else {
         hasMorePast = !section.done;
         break;
@@ -153,7 +163,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
 
     return {
-      sections,
+      sections: sections.reverse(),
       hasMorePast,
     };
   };
@@ -173,10 +183,25 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
-  public scrollToTop = () => this.scrollToDate('2023-11-10');
+  private getTopIndex = (sections: Section[]) =>
+    sections.findIndex(section => {
+      if (typeof section === 'string') {
+        return dayjs(section).isSameOrAfter(
+          this.getInitialDateString(),
+          'date',
+        );
+      }
+      return false;
+    });
+
+  public scrollToTop = () =>
+    this.ref?.scrollToIndex({
+      index: this.getTopIndex(this.state.sections),
+      viewPosition: 0,
+    });
 
   public scrollToDate = (date: string, viewPosition = 0) => {
-    this.ref.current?.scrollToItem({
+    this.ref?.scrollToItem({
       item: date,
       viewPosition,
       animated: this.props.animateScrollToTop,
@@ -193,18 +218,14 @@ export default class AgendaList extends React.PureComponent<Props, State> {
           this.getUpcomingItems(this.props.maxFutureDaysPerBatch);
 
         const sections = [...pastSections, ...upcomingSections];
-        this.setState(
-          {
-            sections: sections.length ? sections : this.state.sections,
-            hasMorePast,
-            hasMoreUpcoming,
-          },
-          () => {
-            if (this.state.sections.length) {
-              this.scrollToTop();
-            }
-          },
-        );
+        const initialScrollIndex = this.getTopIndex(sections);
+
+        this.setState({
+          sections: sections.length ? sections : this.state.sections,
+          hasMorePast,
+          hasMoreUpcoming,
+          initialScrollIndex,
+        });
       }, 0);
     }
   };
@@ -241,13 +262,14 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
     return (
       <FlashList
-        ref={this.ref}
+        ref={this._ref}
         data={this.state.sections}
         style={style}
         contentContainerStyle={contentContainerStyle || styles.container}
         testID={testID}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
+        initialScrollIndex={this.state.initialScrollIndex}
         refreshing={loading}
         onRefresh={onRefresh}
         refreshControl={refreshControl}
