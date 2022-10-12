@@ -50,10 +50,10 @@ export interface AgendaListProps {
 type Props = AgendaListProps;
 
 interface State {
-  sections: Section[];
+  upcoming: Section[];
+  past: Section[];
   hasMoreUpcoming: boolean;
   hasMorePast: boolean;
-  initialScrollIndex: number;
   loading: boolean;
 }
 
@@ -75,10 +75,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   state: Readonly<State> = {
-    sections: [],
+    upcoming: [],
+    past: [],
     hasMorePast: true,
     hasMoreUpcoming: true,
-    initialScrollIndex: 0,
     loading: true,
   };
 
@@ -166,7 +166,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
 
     return {
-      sections: sections.reverse(),
+      sections,
       hasMorePast,
     };
   };
@@ -177,30 +177,26 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         const {sections, hasMoreUpcoming} = this.getUpcomingItems();
 
         this.setState({
-          sections: sections.length
-            ? [...this.state.sections, ...sections]
-            : this.state.sections,
+          upcoming: sections.length
+            ? [...this.state.upcoming, ...sections]
+            : this.state.upcoming,
           hasMoreUpcoming,
         });
       }, 0);
     }
   };
 
+  private onEndReached: ListProps['onEndReached'] = () => {
+    this.loadMoreFutureItems();
+  };
+
   private onScroll: ListProps['onScroll'] = e => {
     this.props.onScroll?.(e);
   };
 
-  private getTopIndex = (sections: Section[]) =>
-    sections.findIndex(section => {
-      if (typeof section === 'string') {
-        return dayjs(section).isSameOrAfter(this.getInitialDateString, 'date');
-      }
-      return false;
-    });
-
   public scrollToTop = () =>
     this.ref?.scrollToIndex({
-      index: this.getTopIndex(this.state.sections),
+      index: 0,
       viewPosition: 0,
       animated: false,
     });
@@ -216,20 +212,18 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   componentDidMount = () => {
     if (this.props.items.length) {
       this.initialLoadTimer = setTimeout(() => {
-        const {sections: pastSections, hasMorePast} = this.getPastItems(
+        const {sections: past, hasMorePast} = this.getPastItems(
           this.props.maxPastDaysPerBatch,
         );
-        const {sections: upcomingSections, hasMoreUpcoming} =
-          this.getUpcomingItems(this.props.maxFutureDaysPerBatch);
-
-        const sections = [...pastSections, ...upcomingSections];
-        const initialScrollIndex = this.getTopIndex(sections);
+        const {sections: upcoming, hasMoreUpcoming} = this.getUpcomingItems(
+          this.props.maxFutureDaysPerBatch,
+        );
 
         this.setState({
-          sections: sections.length ? sections : this.state.sections,
+          upcoming: upcoming.length ? upcoming : this.state.upcoming,
+          past: past.length ? past : this.state.past,
           hasMorePast,
           hasMoreUpcoming,
-          initialScrollIndex,
           loading: false,
         });
       }, 0);
@@ -270,18 +264,16 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     return (
       <FlashList
         ref={this._ref}
-        data={this.state.sections}
+        data={this.state.upcoming}
         contentContainerStyle={styles.contentContainer || contentContainerStyle}
         testID={testID}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
-        estimatedFirstItemOffset={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
-        initialScrollIndex={this.state.initialScrollIndex}
         refreshing={loading || this.state.loading}
         onRefresh={onRefresh}
         refreshControl={refreshControl}
         showsVerticalScrollIndicator={showsVerticalScrollIndicator}
-        onEndReached={this.loadMoreFutureItems}
+        onEndReached={this.onEndReached}
         onEndReachedThreshold={onEndReachedThreshold}
         keyboardShouldPersistTaps={keyboardShouldPersistTaps}
         keyExtractor={keyExtractor || this.keyExtractor}
