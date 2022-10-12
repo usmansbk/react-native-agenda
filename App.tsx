@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
+import {CalendarMode} from '~components/AgendaList';
 import Agenda, {Frequency} from '~index';
 import {AgendaItem} from '~types';
 
@@ -24,7 +25,7 @@ function App() {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <Agenda items={events} />
+      <Agenda items={events} mode={CalendarMode.PAST} />
     </SafeAreaView>
   );
 }

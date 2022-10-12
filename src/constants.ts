@@ -14,5 +14,4 @@ export const DAY_FORMATS: DayFormats = {
   sameElse: 'dddd, D MMMM, YYYY',
 };
 
-export const MAX_NUMBER_OF_FUTURE_DAYS = 14;
-export const MAX_NUMBER_OF_PAST_DAYS = 14;
+export const MAX_NUMBER_OF_DAYS_PER_BATCH = 14;
