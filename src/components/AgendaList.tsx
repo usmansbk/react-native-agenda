@@ -5,7 +5,6 @@ import {StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
 import colors from '~config/colors';
 import {
-  DATE_FORMAT,
   DAY_FORMATS,
   ITEM_HEIGHT,
   MAX_NUMBER_OF_FUTURE_DAYS,
@@ -21,7 +20,13 @@ import ListEmpty from './ListEmpty';
 
 type ListProps = FlashListProps<Section>;
 
+export enum CalendarMode {
+  UPCOMING,
+  PAST,
+}
+
 export interface AgendaListProps {
+  mode?: CalendarMode;
   weekStart?: Weekday;
   loading?: boolean;
   maxPastDaysPerBatch?: number;
@@ -72,6 +77,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     ListEmptyComponent: ListEmpty,
     ListFooterComponent: Footer,
     onEndReachedThreshold: 1,
+    mode: CalendarMode.UPCOMING,
   };
 
   state: Readonly<State> = {
@@ -94,10 +100,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private get getInitialDate() {
     const {initialDate} = this.props;
     return initialDate ? dayjs(initialDate) : dayjs();
-  }
-
-  private get getInitialDateString() {
-    return this.getInitialDate.format(DATE_FORMAT);
   }
 
   private getItemType: ListProps['getItemType'] = item => {
@@ -186,8 +188,27 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
+  private loadMorePastItems = () => {
+    if (this.state.hasMorePast) {
+      this.loadMoreUpcomingTimer = setTimeout(() => {
+        const {sections, hasMorePast} = this.getPastItems();
+
+        this.setState({
+          past: sections.length
+            ? [...this.state.past, ...sections]
+            : this.state.past,
+          hasMorePast,
+        });
+      }, 0);
+    }
+  };
+
   private onEndReached: ListProps['onEndReached'] = () => {
-    this.loadMoreFutureItems();
+    if (this.props.mode === CalendarMode.UPCOMING) {
+      this.loadMoreFutureItems();
+    } else {
+      this.loadMorePastItems();
+    }
   };
 
   private onScroll: ListProps['onScroll'] = e => {
@@ -259,6 +280,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       ItemSeparatorComponent,
       onEndReachedThreshold,
       contentContainerStyle,
+      mode,
     } = this.props;
 
     return (
@@ -267,6 +289,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         data={this.state.upcoming}
         contentContainerStyle={styles.contentContainer || contentContainerStyle}
         testID={testID}
+        inverted={mode === CalendarMode.PAST}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
         refreshing={loading || this.state.loading}
