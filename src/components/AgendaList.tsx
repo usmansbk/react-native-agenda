@@ -31,8 +31,6 @@ export interface AgendaListProps {
   loading?: boolean;
   maxDaysPerBatch?: number;
   animateScrollTo?: boolean;
-  initialDate?: string;
-  showEmptyInitialDay?: boolean;
   items: AgendaItem[];
   itemHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
@@ -69,7 +67,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static defaultProps: Readonly<Partial<Props>> = {
     maxDaysPerBatch: MAX_NUMBER_OF_DAYS_PER_BATCH,
     weekStart: RRule.SU,
-    showEmptyInitialDay: true,
     itemHeight: ITEM_HEIGHT,
     animateScrollTo: false,
     showsVerticalScrollIndicator: false,
@@ -99,8 +96,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   private get getInitialDate() {
-    const {initialDate} = this.props;
-    return initialDate ? dayjs.utc(initialDate) : dayjs.utc();
+    return dayjs.utc();
   }
 
   private get getInitialDateString() {
@@ -114,7 +110,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private calendarConfig = {
     items: this.props.items,
     weekStart: this.props.weekStart,
-    showInitialDay: this.props.showEmptyInitialDay,
   };
 
   private upcomingItems = calendarGenerator({

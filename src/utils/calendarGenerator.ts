@@ -55,38 +55,30 @@ function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
 
 type CreateDateRulesOptions = {
   showEmptyDays?: boolean;
-  showInitialDay?: boolean;
   initialDate?: dayjs.Dayjs;
   weekStart?: Weekday;
 };
 
 function createDateRules(
   events: AgendaItem[],
-  {
-    initialDate,
-    showInitialDay,
-    showEmptyDays,
-    weekStart,
-  }: CreateDateRulesOptions,
+  {showEmptyDays, weekStart}: CreateDateRulesOptions,
 ) {
-  if (showEmptyDays && initialDate) {
+  if (showEmptyDays) {
     return new RRule({
-      dtstart: initialDate.utc().startOf('day').toDate(),
+      dtstart: dayjs.utc().startOf('day').toDate(),
       freq: Frequency.DAILY,
     });
   }
 
   const rules = new RRuleSet();
-  if (showInitialDay && initialDate) {
-    const date = initialDate.utc().startOf('day').toDate();
-    rules.rrule(
-      new RRule({
-        dtstart: date,
-        freq: Frequency.DAILY,
-        until: date,
-      }),
-    );
-  }
+  const date = dayjs.utc().startOf('day').toDate();
+  rules.rrule(
+    new RRule({
+      dtstart: date,
+      freq: Frequency.DAILY,
+      until: date,
+    }),
+  );
 
   events.forEach(event => {
     const {startDate, recurring} = event;
@@ -125,7 +117,6 @@ export function* calendarGenerator({
   initialDate,
   past,
   showEmptyDays,
-  showInitialDay,
   weekStart,
 }: CalendarOptions & CreateDateRulesOptions): Generator<
   AgendaSection,
@@ -135,7 +126,6 @@ export function* calendarGenerator({
   const rules = createDateRules(items, {
     showEmptyDays,
     initialDate,
-    showInitialDay,
     weekStart,
   });
 
