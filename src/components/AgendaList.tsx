@@ -221,6 +221,17 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     }
   };
 
+  private getTopIndex = (sections: Section[]) => {
+    const index = sections.findIndex(section => {
+      if (typeof section === 'string') {
+        return dayjs(section).isSameOrAfter(this.getInitialDateString, 'day');
+      }
+      return false;
+    });
+
+    return index;
+  };
+
   private onScroll: ListProps['onScroll'] = e => {
     this.props.onScroll?.(e);
   };
@@ -240,19 +251,25 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     });
   };
 
-  private loadMore = () => {
-    this.setState(prev => ({
-      mode:
-        prev.mode === CalendarMode.PAST
-          ? CalendarMode.UPCOMING
-          : CalendarMode.PAST,
-    }));
+  private changeScrollDirection = () => {
+    const isPast = this.state.mode === CalendarMode.PAST;
+    const initialScrollIndex = this.getTopIndex(
+      isPast ? this.state.upcoming : this.state.past,
+    );
+
+    this.setState({
+      mode: isPast ? CalendarMode.UPCOMING : CalendarMode.PAST,
+      initialScrollIndex,
+    });
   };
 
   private renderHeader = () => {
     const isPast = this.state.mode === CalendarMode.PAST;
     return (isPast ? this.state.hasMoreUpcoming : this.state.hasMorePast) ? (
-      <Button title="Load More" onPress={this.loadMore} />
+      <Button
+        title={isPast ? 'Load Upcoming' : 'Load Past'}
+        onPress={this.changeScrollDirection}
+      />
     ) : null;
   };
 
@@ -331,7 +348,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         keyExtractor={keyExtractor || this.keyExtractor}
         getItemType={this.getItemType}
         ListEmptyComponent={!items.length ? ListEmptyComponent : null}
-        ListHeaderComponent={this.renderHeader}
+        ListHeaderComponent={!this.state.loading ? this.renderHeader : null}
         ListFooterComponent={
           (isPast ? this.state.hasMorePast : this.state.hasMoreUpcoming)
             ? ListFooterComponent
