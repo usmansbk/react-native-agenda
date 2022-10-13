@@ -69,7 +69,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   static defaultProps: Readonly<Partial<Props>> = {
     maxDaysPerBatch: MAX_NUMBER_OF_DAYS_PER_BATCH,
     weekStart: RRule.SU,
-    showEmptyInitialDay: false,
+    showEmptyInitialDay: true,
     itemHeight: ITEM_HEIGHT,
     animateScrollTo: false,
     showsVerticalScrollIndicator: false,
@@ -100,7 +100,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private get getInitialDate() {
     const {initialDate} = this.props;
-    return initialDate ? dayjs(initialDate) : dayjs();
+    return initialDate ? dayjs.utc(initialDate) : dayjs.utc();
   }
 
   private get getInitialDateString() {
@@ -114,6 +114,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private calendarConfig = {
     items: this.props.items,
     weekStart: this.props.weekStart,
+    showInitialDay: this.props.showEmptyInitialDay,
   };
 
   private upcomingItems = calendarGenerator({
@@ -122,7 +123,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       COMMON_NUMBER_OF_DAYS_OFFSET,
       'days',
     ),
-    showInitialDay: this.props.showEmptyInitialDay,
   });
 
   private pastItems = calendarGenerator({
@@ -235,7 +235,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       return false;
     });
 
-    return index;
+    const headerOffset = 1;
+
+    return index < 0 ? index : index + headerOffset;
   };
 
   private onScroll: ListProps['onScroll'] = e => {
@@ -259,14 +261,15 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private changeScrollDirection = () => {
     const isPast = this.state.mode === CalendarMode.PAST;
-    const initialScrollIndex = this.getTopIndex(
-      isPast ? this.state.upcoming : this.state.past,
-    );
 
-    this.setState({
-      mode: isPast ? CalendarMode.UPCOMING : CalendarMode.PAST,
-      initialScrollIndex,
-    });
+    this.setState(
+      {
+        mode: isPast ? CalendarMode.UPCOMING : CalendarMode.PAST,
+      },
+      () => {
+        this.scrollToDate(this.getInitialDateString);
+      },
+    );
   };
 
   private renderHeader = () => {

@@ -15,4 +15,4 @@ export const DAY_FORMATS: DayFormats = {
 };
 
 export const MAX_NUMBER_OF_DAYS_PER_BATCH = 14;
-export const COMMON_NUMBER_OF_DAYS_OFFSET = 14;
+export const COMMON_NUMBER_OF_DAYS_OFFSET = 7;
