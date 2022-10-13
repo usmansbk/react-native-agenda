@@ -92,11 +92,13 @@ function createDateRules(
     const {startDate, recurring} = event;
     const eventDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
     if (recurring) {
+      const {freq, until} = recurring;
       rules.rrule(
         new RRule({
           dtstart: eventDate,
-          freq: recurring?.freq,
           wkst: weekStart,
+          freq,
+          until: until ? dayjs.utc(until).endOf('day').toDate() : undefined,
         }),
       );
     } else {
@@ -137,6 +139,10 @@ export function* calendarGenerator({
     weekStart,
   });
 
+  if (!items.length) {
+    return undefined;
+  }
+
   const offsetDate = initialDate.startOf('day').toDate();
   const nextDate = past
     ? rules?.before(offsetDate, true)
@@ -149,9 +155,10 @@ export function* calendarGenerator({
 
   while (date) {
     const title = date.format(DATE_FORMAT);
+    const data = getItemsByDate(items, date);
     yield {
       title,
-      data: getItemsByDate(items, date),
+      data,
     };
 
     const nextDate = past

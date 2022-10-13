@@ -2,6 +2,7 @@ import {Frequency} from 'rrule';
 
 interface Recurrence {
   freq: Frequency;
+  until?: string;
 }
 
 export interface AgendaItem {
@@ -11,6 +12,8 @@ export interface AgendaItem {
   startTime?: string;
   recurring?: Recurrence;
 }
+
+export type Section = string | AgendaItem;
 
 export interface AgendaSection {
   title: string;
