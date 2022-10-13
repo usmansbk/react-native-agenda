@@ -1,4 +1,4 @@
-# react-native-agenda-list (WIP: NOT PUBLISHED)
+# react-native-agenda (WIP: NOT PUBLISHED)
 
 A React Native `Agenda` component that can display infinite repeating listings
 
