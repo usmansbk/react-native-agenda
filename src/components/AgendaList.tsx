@@ -5,6 +5,7 @@ import {Button, StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
 import colors from '~config/colors';
 import {
+  COMMON_NUMBER_OF_DAYS_OFFSET,
   DATE_FORMAT,
   DAY_FORMATS,
   ITEM_HEIGHT,
@@ -112,17 +113,21 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private calendarConfig = {
     items: this.props.items,
-    initialDate: this.getInitialDate,
     weekStart: this.props.weekStart,
   };
 
   private upcomingItems = calendarGenerator({
     ...this.calendarConfig,
+    initialDate: this.getInitialDate.subtract(
+      COMMON_NUMBER_OF_DAYS_OFFSET,
+      'days',
+    ),
     showInitialDay: this.props.showEmptyInitialDay,
   });
 
   private pastItems = calendarGenerator({
     ...this.calendarConfig,
+    initialDate: this.getInitialDate.add(COMMON_NUMBER_OF_DAYS_OFFSET, 'days'),
     past: true,
   });
 
@@ -225,7 +230,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private getTopIndex = (sections: Section[]) => {
     const index = sections.findIndex(section => {
       if (typeof section === 'string') {
-        return dayjs(section).isSameOrAfter(this.getInitialDateString, 'day');
+        return dayjs(section).isSameOrAfter(this.getInitialDate, 'day');
       }
       return false;
     });
@@ -282,6 +287,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
           this.getPastItems(maxDaysPerBatch);
         const {sections: upcoming, hasMoreUpcoming} =
           this.getUpcomingItems(maxDaysPerBatch);
+        const initialScrollIndex = this.getTopIndex(upcoming);
 
         this.setState({
           upcoming: upcoming.length ? upcoming : this.state.upcoming,
@@ -289,6 +295,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
           hasMorePast,
           hasMoreUpcoming,
           loading: false,
+          initialScrollIndex,
         });
       }, 0);
     } else {
