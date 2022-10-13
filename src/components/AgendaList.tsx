@@ -1,10 +1,11 @@
 import {FlashList, FlashListProps} from '@shopify/flash-list';
 import dayjs from 'dayjs';
 import React from 'react';
-import {StyleSheet} from 'react-native';
+import {Button, StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
 import colors from '~config/colors';
 import {
+  DATE_FORMAT,
   DAY_FORMATS,
   ITEM_HEIGHT,
   MAX_NUMBER_OF_DAYS_PER_BATCH,
@@ -25,7 +26,6 @@ export enum CalendarMode {
 }
 
 export interface AgendaListProps {
-  mode?: CalendarMode;
   weekStart?: Weekday;
   loading?: boolean;
   maxDaysPerBatch?: number;
@@ -58,6 +58,8 @@ interface State {
   hasMoreUpcoming: boolean;
   hasMorePast: boolean;
   loading: boolean;
+  mode: CalendarMode;
+  initialScrollIndex: number;
 }
 
 export default class AgendaList extends React.PureComponent<Props, State> {
@@ -74,7 +76,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     ListEmptyComponent: ListEmpty,
     ListFooterComponent: Footer,
     onEndReachedThreshold: 1,
-    mode: CalendarMode.UPCOMING,
   };
 
   state: Readonly<State> = {
@@ -83,6 +84,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     hasMorePast: true,
     hasMoreUpcoming: true,
     loading: true,
+    mode: CalendarMode.UPCOMING,
+    initialScrollIndex: 0,
   };
 
   private initialLoadTimer: number | undefined;
@@ -97,6 +100,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   private get getInitialDate() {
     const {initialDate} = this.props;
     return initialDate ? dayjs(initialDate) : dayjs();
+  }
+
+  private get getInitialDateString() {
+    return this.getInitialDate.format(DATE_FORMAT);
   }
 
   private getItemType: ListProps['getItemType'] = item => {
@@ -121,7 +128,13 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private onPressItem: Props['onPressItem'] = this.props.onPressItem;
 
-  private keyExtractor: Props['keyExtractor'] = (item, index) => String(index);
+  private keyExtractor: Props['keyExtractor'] = (item, index) => {
+    if (typeof item === 'string') {
+      return item + index;
+    }
+
+    return this.state.mode + item.id + index;
+  };
 
   private renderItem: Props['renderItem'] = ({item}) => {
     if (typeof item === 'string') {
@@ -201,7 +214,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   };
 
   private onEndReached: ListProps['onEndReached'] = () => {
-    if (this.props.mode === CalendarMode.PAST) {
+    if (this.state.mode === CalendarMode.PAST) {
       this.loadMorePastItems();
     } else {
       this.loadMoreFutureItems();
@@ -225,6 +238,22 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       viewPosition,
       animated: this.props.animateScrollTo,
     });
+  };
+
+  private loadMore = () => {
+    this.setState(prev => ({
+      mode:
+        prev.mode === CalendarMode.PAST
+          ? CalendarMode.UPCOMING
+          : CalendarMode.PAST,
+    }));
+  };
+
+  private renderHeader = () => {
+    const isPast = this.state.mode === CalendarMode.PAST;
+    return (isPast ? this.state.hasMoreUpcoming : this.state.hasMorePast) ? (
+      <Button title="Load More" onPress={this.loadMore} />
+    ) : null;
   };
 
   componentDidMount = () => {
@@ -276,11 +305,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       ItemSeparatorComponent,
       onEndReachedThreshold,
       contentContainerStyle,
-      mode,
     } = this.props;
 
-    const data =
-      mode === CalendarMode.PAST ? this.state.past : this.state.upcoming;
+    const isPast = this.state.mode === CalendarMode.PAST;
+    const data = isPast ? this.state.past : this.state.upcoming;
 
     return (
       <FlashList
@@ -288,8 +316,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         data={data}
         contentContainerStyle={styles.contentContainer || contentContainerStyle}
         testID={testID}
-        inverted={mode === CalendarMode.PAST}
+        inverted={isPast}
+        initialScrollIndex={this.state.initialScrollIndex}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
+        estimatedFirstItemOffset={itemHeight || ITEM_HEIGHT}
         renderItem={renderItem || this.renderItem}
         refreshing={loading || this.state.loading}
         onRefresh={onRefresh}
@@ -301,12 +331,9 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         keyExtractor={keyExtractor || this.keyExtractor}
         getItemType={this.getItemType}
         ListEmptyComponent={!items.length ? ListEmptyComponent : null}
+        ListHeaderComponent={this.renderHeader}
         ListFooterComponent={
-          (
-            mode === CalendarMode.PAST
-              ? this.state.hasMorePast
-              : this.state.hasMoreUpcoming
-          )
+          (isPast ? this.state.hasMorePast : this.state.hasMoreUpcoming)
             ? ListFooterComponent
             : null
         }
