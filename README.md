@@ -92,21 +92,21 @@ export interface AgendaListProps {
   items: AgendaItem[];
   itemHeight?: number;
   onPressItem?: (item: AgendaItem) => void;
-  testID?: ListProps['testID'];
-  contentContainerStyle?: ListProps['contentContainerStyle'];
-  onScroll?: ListProps['onScroll'];
-  showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
-  keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
-  onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
-  refreshControl?: ListProps['refreshControl'];
-  onRefresh?: ListProps['onRefresh'];
-  keyExtractor?: ListProps['keyExtractor'];
+  testID?: FlashListProps['testID'];
+  contentContainerStyle?: FlashListProps['contentContainerStyle'];
+  onScroll?: FlashListProps['onScroll'];
+  showsVerticalScrollIndicator?: FlashListProps['showsVerticalScrollIndicator'];
+  keyboardShouldPersistTaps?: FlashListProps['keyboardShouldPersistTaps'];
+  onEndReachedThreshold?: FlashListProps['onEndReachedThreshold'];
+  refreshControl?: FlashListProps['refreshControl'];
+  onRefresh?: FlashListProps['onRefresh'];
+  keyExtractor?: FlashListProps['keyExtractor'];
   renderHeader: (onPress: () => void, mode: CalendarMode) => React.ReactElement;
-  renderDayHeader?: ListProps['renderItem'];
-  renderItem?: ListProps['renderItem'];
-  ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
-  ListEmptyComponent?: ListProps['ListEmptyComponent'];
-  ListFooterComponent?: ListProps['ListFooterComponent'];
+  renderDayHeader?: FlashListProps['renderItem'];
+  renderItem?: FlashListProps['renderItem'];
+  ItemSeparatorComponent?: FlashListProps['ItemSeparatorComponent'];
+  ListEmptyComponent?: FlashListProps['ListEmptyComponent'];
+  ListFooterComponent?: FlashListProps['ListFooterComponent'];
 }
 ```
 
