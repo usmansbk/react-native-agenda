@@ -91,7 +91,9 @@ export interface AgendaListProps {
   loadPastText?: string; // default: 'Load Past'
   loadUpcomingText?: string; // default: 'Load Upcoming'
 
-  // The week start day. Must be one of the Weekday.MO, Weekday.TU, Weekday.WE constants, or an integer, specifying the first day of the week. This will affect recurrences based on weekly periods. The default week start is Weekday.MO
+  // The week start day. Must be one of the Weekday.MO, Weekday.TU, Weekday.WE constants, or an integer,
+  // specifying the first day of the week. This will affect recurrences based on weekly periods.
+  // The default week start is Weekday.MO
   weekStart?: Weekday;
   loading?: boolean;
   maxDaysPerBatch?: number; // default: 14 days
@@ -126,13 +128,15 @@ interface Recurrence {
   freq: Frequency;
 
   // If given, this must be a Date instance, that will specify the limit of the recurrence.
-  // If a recurrence instance happens to be the same as the Date instance given in the until argument, this will be the last occurrence.
+  // If a recurrence instance happens to be the same as the Date instance given in the until argument,
+  // this will be the last occurrence.
   until?: string;
 
   // How many occurrences will be generated.
   count?: number | null;
 
-  // The interval between each freq iteration. For example, when using Frequency.YEARLY, an interval of 2 means once every two years.
+  // The interval between each freq iteration.
+  // For example, when using Frequency.YEARLY, an interval of 2 means once every two years.
   // The default interval is 1.
   interval?: number;
 
@@ -147,11 +151,14 @@ interface Recurrence {
   // If given, it must be either an integer, or an array of integers, meaning the year days to apply the recurrence to.
   byYearDay?: number | number[];
 
-  // If given, it must be either an integer, or an array of integers, meaning the week numbers to apply the recurrence to.
-  // Week numbers have the meaning described in ISO8601, that is, the first week of the year is that containing at least four days of the new year.
+  // If given, it must be either an integer, or an array of integers,
+  // meaning the week numbers to apply the recurrence to.
+  // Week numbers have the meaning described in ISO8601, that is,
+  // the first week of the year is that containing at least four days of the new year.
   byWeekNumber?: number | number[];
 
-  // If given, it must be either an integer (0 == Weekday.MO), an array of integers, one of the weekday constants (Weekday.MO, Weekday.TU, etc), or an array of these constants.
+  // If given, it must be either an integer (0 == Weekday.MO), an array of integers,
+  // one of the weekday constants (Weekday.MO, Weekday.TU, etc), or an array of these constants.
   // When given, these variables will define the weekdays where the recurrence will be applied.
   byWeekday?: number | number[] | Weekday | Weekday[];
 }
