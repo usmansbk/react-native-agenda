@@ -142,6 +142,12 @@ interface Recurrence {
   // The default interval is 1.
   interval?: number;
 
+  // If given, it must be either an integer, or an array of integers, positive or negative.
+  // Each given integer will specify an occurrence number,
+  // corresponding to the nth occurrence of the rule inside the frequency period.
+  // For example, a bysetpos of -1 if combined with a Frequency.MONTHLY frequency,
+  // and a byweekday of (Weekday.MO, Weekday.TU, Weekday.WE, Weekday.TH, Weekday.FR),
+  // will result in the last work day of every month.
   bySetPos?: number | number[];
 
   // If given, it must be either an integer, or an array of integers, meaning the months to apply the recurrence to.
