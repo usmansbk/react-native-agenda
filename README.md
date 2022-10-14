@@ -36,7 +36,7 @@ The component is built on top [@shopify/flash-list](https://github.com/Shopify/f
 ```tsx
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import Agenda, {AgendaItem, Frequency} from 'react-native-agenda';
+import {AgendaItem, AgendaList, Frequency} from 'react-native-agenda';
 
 export default function App() {
   const [events] = useState<AgendaItem[]>([
@@ -59,7 +59,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <Agenda items={events} />
+      <AgendaList items={events} />
     </SafeAreaView>
   );
 }
