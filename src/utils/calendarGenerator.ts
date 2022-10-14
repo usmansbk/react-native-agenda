@@ -79,13 +79,32 @@ function createDateRules(
     const {startDate, recurring} = event;
     const eventDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
     if (recurring) {
-      const {freq, until} = recurring;
+      const {
+        freq,
+        until,
+        count,
+        interval = 1,
+        byMonth,
+        byMonthDay,
+        bySetPos,
+        byWeekNumber,
+        byWeekday,
+        byYearDay,
+      } = recurring;
       rules.rrule(
         new RRule({
           dtstart: eventDate,
           wkst: weekStart,
-          freq,
           until: until ? dayjs.utc(until).endOf('day').toDate() : undefined,
+          freq,
+          count,
+          interval,
+          bymonth: byMonth,
+          bymonthday: byMonthDay,
+          bysetpos: bySetPos,
+          byweekno: byWeekNumber,
+          byweekday: byWeekday,
+          byyearday: byYearDay,
         }),
       );
     } else {

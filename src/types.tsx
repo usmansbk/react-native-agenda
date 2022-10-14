@@ -1,8 +1,16 @@
-import {Frequency} from 'rrule';
+import {Frequency, Weekday} from 'rrule';
 
 interface Recurrence {
   freq: Frequency;
   until?: string;
+  count?: number | null;
+  interval?: number;
+  bySetPos?: number | number[];
+  byMonth?: number | number[];
+  byMonthDay?: number | number[];
+  byYearDay?: number | number[];
+  byWeekNumber?: number | number[];
+  byWeekday?: number | number[] | Weekday | Weekday[];
 }
 
 export interface AgendaItem {
