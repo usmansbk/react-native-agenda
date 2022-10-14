@@ -82,6 +82,11 @@ export interface AgendaItem {
 ### AgendaList
 
 ```ts
+export enum CalendarMode {
+  UPCOMING,
+  PAST,
+}
+
 export interface AgendaListProps {
   loadPastText?: string;
   loadUpcomingText?: string;
