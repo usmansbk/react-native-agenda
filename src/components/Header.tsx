@@ -3,11 +3,11 @@ import colors from '~config/colors';
 import {ITEM_HEIGHT} from '~constants';
 
 interface Props {
-  title: string;
+  title?: string;
   onPress?: () => void;
 }
 
-export default function Header({title, onPress}: Props) {
+export default function Header({title = 'Load more', onPress}: Props) {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Text style={styles.title}>{title}</Text>

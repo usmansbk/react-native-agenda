@@ -28,6 +28,8 @@ export enum CalendarMode {
 }
 
 export interface AgendaListProps {
+  loadPastText?: string;
+  loadUpcomingText?: string;
   weekStart?: Weekday;
   loading?: boolean;
   maxDaysPerBatch?: number;
@@ -75,6 +77,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     ListEmptyComponent: ListEmpty,
     ListFooterComponent: Footer,
     onEndReachedThreshold: 1,
+    loadPastText: 'Load Past',
+    loadUpcomingText: 'Load Upcoming',
   };
 
   state: Readonly<State> = {
@@ -263,9 +267,10 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private renderHeader = () => {
     const isPast = this.state.mode === CalendarMode.PAST;
+    const {loadPastText, loadUpcomingText} = this.props;
     return (
       <Header
-        title={isPast ? 'Load Upcoming' : 'Load Past'}
+        title={isPast ? loadUpcomingText : loadPastText}
         onPress={this.changeScrollDirection}
       />
     );

@@ -11,7 +11,7 @@ function App() {
       startDate: '2022-01-10',
       startTime: '19:06',
       recurring: {
-        freq: Frequency.DAILY,
+        freq: Frequency.YEARLY,
       },
     },
     {
@@ -23,7 +23,7 @@ function App() {
   ]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <Agenda items={events} />
     </SafeAreaView>
   );
