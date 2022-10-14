@@ -31,6 +31,41 @@ yarn add react-native-agenda
 
 The component is built on top [@shopify/flash-list](https://shopify.github.io/flash-list/docs/). I suggest you read their docs for a better understanding of how to customize your Agenda list.
 
+## Getting Started
+
+```jsx
+import React, {useState} from 'react';
+import {SafeAreaView} from 'react-native';
+import Agenda, {Frequency} from '~index';
+import {AgendaItem} from '~types';
+
+export default function App() {
+  const [events] = useState<AgendaItem[]>([
+    {
+      id: '1',
+      title: 'Scholarships',
+      startDate: '2022-01-10',
+      startTime: '19:06',
+      recurring: {
+        freq: Frequency.DAILY,
+      },
+    },
+    {
+      id: '2',
+      title: 'Overdue',
+      startDate: '2022-10-10',
+      startTime: '23:06',
+    },
+  ]);
+
+  return (
+    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      <Agenda items={events} />
+    </SafeAreaView>
+  );
+}
+```
+
 ## Authors
 
 - [Babakolo Usman Suleiman](https://github.com/usmansbk) - [@421_misdirected](https://twitter.com/421_misdirected)
