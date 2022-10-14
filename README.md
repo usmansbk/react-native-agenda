@@ -88,14 +88,16 @@ export enum CalendarMode {
 }
 
 export interface AgendaListProps {
-  loadPastText?: string;
-  loadUpcomingText?: string;
+  loadPastText?: string; // default: 'Load Past'
+  loadUpcomingText?: string; // default: 'Load Upcoming'
+
+  // The week start day. Must be one of the Weekday.MO, Weekday.TU, Weekday.WE constants, or an integer, specifying the first day of the week. This will affect recurrences based on weekly periods. The default week start is Weekday.MO
   weekStart?: Weekday;
   loading?: boolean;
-  maxDaysPerBatch?: number;
-  animateScrollTo?: boolean;
+  maxDaysPerBatch?: number; // default: 14 days
+  animateScrollTo?: boolean; // default: false
   items: AgendaItem[];
-  itemHeight?: number;
+  itemHeight?: number; // default: 40
   onPressItem?: (item: AgendaItem) => void;
   testID?: FlashListProps['testID'];
   contentContainerStyle?: FlashListProps['contentContainerStyle'];
