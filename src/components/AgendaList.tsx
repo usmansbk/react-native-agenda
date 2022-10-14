@@ -47,6 +47,7 @@ export interface AgendaListProps {
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
   renderItem?: ListProps['renderItem'];
+  renderHeader: (onPress: () => void, mode: CalendarMode) => React.ReactElement;
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
   ListEmptyComponent?: ListProps['ListEmptyComponent'];
   ListFooterComponent?: ListProps['ListFooterComponent'];
@@ -265,9 +266,16 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     );
   };
 
-  private renderHeader = () => {
-    const isPast = this.state.mode === CalendarMode.PAST;
-    const {loadPastText, loadUpcomingText} = this.props;
+  private renderHeader = (): React.ReactElement => {
+    const {mode} = this.state;
+    const {loadPastText, loadUpcomingText, renderHeader} = this.props;
+
+    const isPast = mode === CalendarMode.PAST;
+
+    if (renderHeader) {
+      return renderHeader(this.changeScrollDirection, mode);
+    }
+
     return (
       <Header
         title={isPast ? loadUpcomingText : loadPastText}
