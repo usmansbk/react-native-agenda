@@ -46,8 +46,9 @@ export interface AgendaListProps {
   refreshControl?: ListProps['refreshControl'];
   onRefresh?: ListProps['onRefresh'];
   keyExtractor?: ListProps['keyExtractor'];
-  renderItem?: ListProps['renderItem'];
   renderHeader: (onPress: () => void, mode: CalendarMode) => React.ReactElement;
+  renderDayHeader?: ListProps['renderItem'];
+  renderItem?: ListProps['renderItem'];
   ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
   ListEmptyComponent?: ListProps['ListEmptyComponent'];
   ListFooterComponent?: ListProps['ListFooterComponent'];
@@ -140,12 +141,20 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     return mode + item.id + index;
   };
 
-  private renderItem: Props['renderItem'] = ({item}) => {
+  private renderItem: Props['renderItem'] = prop => {
+    const {renderDayHeader, renderItem} = this.props;
+    const {item} = prop;
+
     if (typeof item === 'string') {
       const title = dayjs(item).calendar(null, DAY_FORMATS);
-      return <DayHeader title={title} />;
+      return renderDayHeader?.(prop) || <DayHeader title={title} />;
     }
-    return <DefaultAgendaItem item={item} onPress={this.onPressItem} />;
+
+    return (
+      renderItem?.(prop) || (
+        <DefaultAgendaItem item={item} onPress={this.onPressItem} />
+      )
+    );
   };
 
   private getUpcomingItems = (maxNumOfDays = MAX_NUMBER_OF_DAYS_PER_BATCH) => {
@@ -313,7 +322,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
       loading,
       onRefresh,
       refreshControl,
-      renderItem,
       keyExtractor,
       keyboardShouldPersistTaps,
       showsVerticalScrollIndicator,
@@ -337,7 +345,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
         initialScrollIndex={this.state.initialScrollIndex}
         estimatedItemSize={itemHeight || ITEM_HEIGHT}
         estimatedFirstItemOffset={itemHeight || ITEM_HEIGHT}
-        renderItem={renderItem || this.renderItem}
+        renderItem={this.renderItem}
         refreshing={loading || this.state.loading}
         onRefresh={onRefresh}
         refreshControl={refreshControl}
