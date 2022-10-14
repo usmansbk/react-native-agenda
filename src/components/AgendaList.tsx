@@ -68,7 +68,7 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     maxDaysPerBatch: MAX_NUMBER_OF_DAYS_PER_BATCH,
     weekStart: RRule.SU,
     itemHeight: ITEM_HEIGHT,
-    animateScrollTo: false,
+    animateScrollTo: true,
     showsVerticalScrollIndicator: false,
     ItemSeparatorComponent: Divider,
     ListEmptyComponent: ListEmpty,
