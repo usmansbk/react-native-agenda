@@ -146,7 +146,7 @@ interface Recurrence {
   // Each given integer will specify an occurrence number,
   // corresponding to the nth occurrence of the rule inside the frequency period.
   // For example, a bysetpos of -1 if combined with a Frequency.MONTHLY frequency,
-  // and a byweekday of (Weekday.MO, Weekday.TU, Weekday.WE, Weekday.TH, Weekday.FR),
+  // and a byWeekday of (Weekday.MO, Weekday.TU, Weekday.WE, Weekday.TH, Weekday.FR),
   // will result in the last work day of every month.
   bySetPos?: number | number[];
 
