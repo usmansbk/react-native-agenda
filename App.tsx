@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import Agenda, {Frequency} from '~index';
+import {AgendaList, Frequency} from '~index';
 import {AgendaItem} from '~types';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
-      <Agenda items={events} />
+      <AgendaList items={events} />
     </SafeAreaView>
   );
 }
