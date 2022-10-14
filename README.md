@@ -29,14 +29,14 @@ yarn add react-native-agenda
 
 ## Usage
 
-The component is built on top [@shopify/flash-list](https://shopify.github.io/flash-list/docs/). I suggest you read their docs for a better understanding of how to customize your Agenda list.
+The component is built on top [@shopify/flash-list](https://github.com/Shopify/flash-list/). We recommend reading the detailed documentation for using FlashList [here](https://shopify.github.io/flash-list/docs/).
 
 ## Getting Started
 
-```jsx
+```tsx
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native';
-import Agenda, {Frequency, AgendaItem} from 'react-native-agenda';
+import Agenda, {AgendaItem, Frequency} from 'react-native-agenda';
 
 export default function App() {
   const [events] = useState<AgendaItem[]>([
@@ -62,6 +62,68 @@ export default function App() {
       <Agenda items={events} />
     </SafeAreaView>
   );
+}
+```
+
+## API Documentation
+
+### AgendaItem
+
+```ts
+export interface AgendaItem {
+  id: string;
+  title: string;
+  startDate: string;
+  startTime?: string;
+  recurring?: Recurrence;
+}
+```
+
+### AgendaList
+
+```ts
+export interface AgendaListProps {
+  loadPastText?: string;
+  loadUpcomingText?: string;
+  weekStart?: Weekday;
+  loading?: boolean;
+  maxDaysPerBatch?: number;
+  animateScrollTo?: boolean;
+  items: AgendaItem[];
+  itemHeight?: number;
+  onPressItem?: (item: AgendaItem) => void;
+  testID?: ListProps['testID'];
+  contentContainerStyle?: ListProps['contentContainerStyle'];
+  onScroll?: ListProps['onScroll'];
+  showsVerticalScrollIndicator?: ListProps['showsVerticalScrollIndicator'];
+  keyboardShouldPersistTaps?: ListProps['keyboardShouldPersistTaps'];
+  onEndReachedThreshold?: ListProps['onEndReachedThreshold'];
+  refreshControl?: ListProps['refreshControl'];
+  onRefresh?: ListProps['onRefresh'];
+  keyExtractor?: ListProps['keyExtractor'];
+  renderHeader: (onPress: () => void, mode: CalendarMode) => React.ReactElement;
+  renderDayHeader?: ListProps['renderItem'];
+  renderItem?: ListProps['renderItem'];
+  ItemSeparatorComponent?: ListProps['ItemSeparatorComponent'];
+  ListEmptyComponent?: ListProps['ListEmptyComponent'];
+  ListFooterComponent?: ListProps['ListFooterComponent'];
+}
+```
+
+### Recurrence
+
+```ts
+interface Recurrence {
+  freq: Frequency;
+  until?: string;
+  count?: number | null;
+  interval?: number;
+  bySetPos?: number | number[];
+  byMonth?: number | number[];
+  byMonthDay?: number | number[];
+  byYearDay?: number | number[];
+  byWeekNumber?: number | number[];
+  byWeekday?: number | number[] | Weekday | Weekday[];
 }
 ```
 
