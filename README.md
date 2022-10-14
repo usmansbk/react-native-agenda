@@ -90,8 +90,8 @@ export enum CalendarMode {
 }
 
 export interface AgendaListProps {
-  loadPastText?: string; // default: 'Load Past'
-  loadUpcomingText?: string; // default: 'Load Upcoming'
+  loadPastText?: string; // default: 'View Past'
+  loadUpcomingText?: string; // default: 'View Upcoming'
 
   // The week start day. Must be one of the Weekday.MO, Weekday.TU, Weekday.WE constants, or an integer,
   // specifying the first day of the week. This will affect recurrences based on weekly periods.

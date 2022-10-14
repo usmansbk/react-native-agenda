@@ -79,8 +79,8 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     ListEmptyComponent: ListEmpty,
     ListFooterComponent: Footer,
     onEndReachedThreshold: 1,
-    loadPastText: 'Load Past',
-    loadUpcomingText: 'Load Upcoming',
+    loadPastText: 'View Past',
+    loadUpcomingText: 'View Upcoming',
   };
 
   state: Readonly<State> = {
