@@ -112,6 +112,8 @@ export interface AgendaListProps {
 
 ### Recurrence
 
+Recurrence is handled with `RRule` [package](https://github.com/jakubroztocil/rrule).
+
 ```ts
 interface Recurrence {
   freq: Frequency;
@@ -124,6 +126,17 @@ interface Recurrence {
   byYearDay?: number | number[];
   byWeekNumber?: number | number[];
   byWeekday?: number | number[] | Weekday | Weekday[];
+}
+```
+
+### Frequency
+
+```ts
+interface Frequency {
+  DAILY;
+  WEEKLY;
+  MONTHLY;
+  YEARLY;
 }
 ```
 
