@@ -31,7 +31,7 @@ yarn add react-native-agenda
 
 The component is built on top [@shopify/flash-list](https://github.com/Shopify/flash-list/). We recommend reading the detailed documentation for using FlashList [here](https://shopify.github.io/flash-list/docs/).
 
-We also use to [`rrule.js`](https://github.com/jakubroztocil/rrule) and [`day.js`](https://day.js.org/en/) to manipulate recurring dates.
+We also use [`rrule.js`](https://github.com/jakubroztocil/rrule) and [`day.js`](https://day.js.org/en/) to manipulate recurring dates.
 
 ## Getting Started
 
