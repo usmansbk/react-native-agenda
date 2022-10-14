@@ -87,9 +87,6 @@ export default class AgendaList extends React.PureComponent<Props, State> {
     initialScrollIndex: 0,
   };
 
-  private initialLoadTimer: number | undefined;
-  private loadMoreUpcomingTimer: number | undefined;
-
   private ref?: FlashList<Section> | null;
 
   private _ref = (ref: typeof this.ref) => {
@@ -187,31 +184,27 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private loadMoreFutureItems = () => {
     if (this.state.hasMoreUpcoming) {
-      this.loadMoreUpcomingTimer = setTimeout(() => {
-        const {sections, hasMoreUpcoming} = this.getUpcomingItems();
+      const {sections, hasMoreUpcoming} = this.getUpcomingItems();
 
-        this.setState({
-          upcoming: sections.length
-            ? [...this.state.upcoming, ...sections]
-            : this.state.upcoming,
-          hasMoreUpcoming,
-        });
-      }, 0);
+      this.setState({
+        upcoming: sections.length
+          ? [...this.state.upcoming, ...sections]
+          : this.state.upcoming,
+        hasMoreUpcoming,
+      });
     }
   };
 
   private loadMorePastItems = () => {
     if (this.state.hasMorePast) {
-      this.loadMoreUpcomingTimer = setTimeout(() => {
-        const {sections, hasMorePast} = this.getPastItems();
+      const {sections, hasMorePast} = this.getPastItems();
 
-        this.setState({
-          past: sections.length
-            ? [...this.state.past, ...sections]
-            : this.state.past,
-          hasMorePast,
-        });
-      }, 0);
+      this.setState({
+        past: sections.length
+          ? [...this.state.past, ...sections]
+          : this.state.past,
+        hasMorePast,
+      });
     }
   };
 
@@ -281,34 +274,21 @@ export default class AgendaList extends React.PureComponent<Props, State> {
   componentDidMount = () => {
     const {maxDaysPerBatch, items} = this.props;
     if (items.length) {
-      this.initialLoadTimer = setTimeout(() => {
-        const {sections: past, hasMorePast} =
-          this.getPastItems(maxDaysPerBatch);
-        const {sections: upcoming, hasMoreUpcoming} =
-          this.getUpcomingItems(maxDaysPerBatch);
-        const initialScrollIndex = this.getTopIndex(upcoming);
+      const {sections: past, hasMorePast} = this.getPastItems(maxDaysPerBatch);
+      const {sections: upcoming, hasMoreUpcoming} =
+        this.getUpcomingItems(maxDaysPerBatch);
+      const initialScrollIndex = this.getTopIndex(upcoming);
 
-        this.setState({
-          upcoming: upcoming.length ? upcoming : this.state.upcoming,
-          past: past.length ? past : this.state.past,
-          hasMorePast,
-          hasMoreUpcoming,
-          loading: false,
-          initialScrollIndex,
-        });
-      }, 0);
+      this.setState({
+        upcoming: upcoming.length ? upcoming : this.state.upcoming,
+        past: past.length ? past : this.state.past,
+        hasMorePast,
+        hasMoreUpcoming,
+        loading: false,
+        initialScrollIndex,
+      });
     } else {
       this.setState({loading: false});
-    }
-  };
-
-  componentWillUnmount = () => {
-    if (this.initialLoadTimer !== undefined) {
-      clearTimeout(this.initialLoadTimer);
-    }
-
-    if (this.loadMoreUpcomingTimer !== undefined) {
-      clearTimeout(this.loadMoreUpcomingTimer);
     }
   };
 
