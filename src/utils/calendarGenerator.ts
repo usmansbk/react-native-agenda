@@ -156,10 +156,12 @@ export function* calendarGenerator({
       : rules?.after(date.toDate());
 
     if (!nextDate) {
-      break;
+      date = past
+        ? date.subtract(1, 'day').startOf('day')
+        : date.add(1, 'day').startOf('day');
+    } else {
+      date = dayjs.utc(nextDate).startOf('day');
     }
-
-    date = dayjs.utc(nextDate).startOf('day');
   }
 
   return undefined;
