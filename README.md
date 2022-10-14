@@ -43,7 +43,7 @@ export default function App() {
   const [events] = useState<AgendaItem[]>([
     {
       id: '1',
-      title: 'Scholarships',
+      title: 'Pick up laundry',
       startDate: '2022-01-10',
       startTime: '19:06',
       recurring: {
@@ -52,7 +52,7 @@ export default function App() {
     },
     {
       id: '2',
-      title: 'Overdue',
+      title: 'Do dishes',
       startDate: '2022-10-10',
       startTime: '23:06',
     },
