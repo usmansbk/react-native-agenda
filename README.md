@@ -112,7 +112,7 @@ export interface AgendaListProps {
 
 ### Recurrence
 
-Recurrence is handled with `RRule` [package](https://github.com/jakubroztocil/rrule).
+Recurrence is handled with `RRule` [package](https://github.com/jakubroztocil/rrule). Check their [docs](https://github.com/jakubroztocil/rrule/blob/master/README.md#api) for more details.
 
 ```ts
 interface Recurrence {
