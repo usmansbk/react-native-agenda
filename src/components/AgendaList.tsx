@@ -1,7 +1,7 @@
 import {FlashList, FlashListProps} from '@shopify/flash-list';
 import dayjs from 'dayjs';
 import React from 'react';
-import {Button, StyleSheet} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {RRule, Weekday} from 'rrule';
 import colors from '~config/colors';
 import {
@@ -17,6 +17,7 @@ import DayHeader from './DayHeader';
 import DefaultAgendaItem from './DefaultAgendaItem';
 import Divider from './Divider';
 import Footer from './Footer';
+import Header from './Header';
 import ListEmpty from './ListEmpty';
 
 type ListProps = FlashListProps<Section>;
@@ -269,12 +270,12 @@ export default class AgendaList extends React.PureComponent<Props, State> {
 
   private renderHeader = () => {
     const isPast = this.state.mode === CalendarMode.PAST;
-    return (isPast ? this.state.hasMoreUpcoming : this.state.hasMorePast) ? (
-      <Button
+    return (
+      <Header
         title={isPast ? 'Load Upcoming' : 'Load Past'}
         onPress={this.changeScrollDirection}
       />
-    ) : null;
+    );
   };
 
   componentDidMount = () => {
