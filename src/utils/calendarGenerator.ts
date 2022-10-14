@@ -3,7 +3,7 @@ import {DATE_FORMAT} from '~constants';
 import {AgendaItem, AgendaSection} from '~types';
 import dayjs from '~utils/dayjs';
 
-function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
+export function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   const {startDate, recurring} = item;
 
   let itemDate = dayjs.utc(startDate, DATE_FORMAT).toDate();
@@ -23,7 +23,10 @@ function matches(item: AgendaItem, date: dayjs.Dayjs): boolean {
   return date.isSame(itemDate, 'date');
 }
 
-function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
+export function getItemsByDate(
+  items: AgendaItem[],
+  date: dayjs.Dayjs,
+): AgendaItem[] {
   const data: AgendaItem[] = [];
 
   items.forEach(item => {
@@ -54,22 +57,14 @@ function getItemsByDate(items: AgendaItem[], date: dayjs.Dayjs): AgendaItem[] {
 }
 
 type CreateDateRulesOptions = {
-  showEmptyDays?: boolean;
   initialDate?: dayjs.Dayjs;
   weekStart?: Weekday;
 };
 
 function createDateRules(
   events: AgendaItem[],
-  {showEmptyDays, weekStart}: CreateDateRulesOptions,
+  {weekStart}: CreateDateRulesOptions,
 ) {
-  if (showEmptyDays) {
-    return new RRule({
-      dtstart: dayjs.utc().startOf('day').toDate(),
-      freq: Frequency.DAILY,
-    });
-  }
-
   const rules = new RRuleSet();
   const date = dayjs.utc().startOf('day').toDate();
   rules.rrule(
@@ -116,7 +111,6 @@ export function* calendarGenerator({
   items,
   initialDate,
   past,
-  showEmptyDays,
   weekStart,
 }: CalendarOptions & CreateDateRulesOptions): Generator<
   AgendaSection,
@@ -124,7 +118,6 @@ export function* calendarGenerator({
   AgendaSection
 > {
   const rules = createDateRules(items, {
-    showEmptyDays,
     initialDate,
     weekStart,
   });
